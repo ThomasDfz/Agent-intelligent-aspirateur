@@ -1,0 +1,10 @@
+C:\Users\Rayth\RiderProjects\VacuumAgent\VacuumAgent\bin\Debug\VacuumAgent.exe
+C:\Users\Rayth\RiderProjects\VacuumAgent\VacuumAgent\bin\Debug\VacuumAgent.pdb
+C:\Users\Rayth\RiderProjects\VacuumAgent\VacuumAgent\obj\Debug\VacuumAgent.csprojResolveAssemblyReference.cache
+C:\Users\Rayth\RiderProjects\VacuumAgent\VacuumAgent\obj\Debug\VacuumAgent.exe
+C:\Users\Rayth\RiderProjects\VacuumAgent\VacuumAgent\obj\Debug\VacuumAgent.pdb
+D:\Users\psyke\Desktop\VacuumAgent\VacuumAgent\bin\Debug\VacuumAgent.exe
+D:\Users\psyke\Desktop\VacuumAgent\VacuumAgent\bin\Debug\VacuumAgent.pdb
+D:\Users\psyke\Desktop\VacuumAgent\VacuumAgent\obj\Debug\VacuumAgent.csprojResolveAssemblyReference.cache
+D:\Users\psyke\Desktop\VacuumAgent\VacuumAgent\obj\Debug\VacuumAgent.exe
+D:\Users\psyke\Desktop\VacuumAgent\VacuumAgent\obj\Debug\VacuumAgent.pdb
