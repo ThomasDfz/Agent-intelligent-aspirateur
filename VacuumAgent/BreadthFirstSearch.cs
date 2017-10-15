@@ -127,7 +127,7 @@ namespace VacuumAgent
                 {
                     intentions.Push(Actions.MoveUp);
                 }
-                else if (nextX == actualX && nextY == actualY - 1 && actualX > 0)
+                else if (nextX == actualX && nextY == actualY - 1 && actualY > 0)
                 {
                     intentions.Push(Actions.MoveDown);
                 }

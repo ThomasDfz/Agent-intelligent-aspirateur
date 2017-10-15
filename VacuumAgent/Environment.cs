@@ -77,25 +77,29 @@ namespace VacuumAgent
                     int y = rnd.Next(0, NbCaseY);
                     if (dirtOrJewel < ChanceJewelry)
                     {
-                        if(!rooms[x, y].HasJewel())
+                        if (!rooms[x, y].HasJewel())
+                        {
                             rooms[x, y].JewelGenerated();
-                        Console.BackgroundColor = ConsoleColor.Blue;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($"Jewel generated at {x},{y}");
-                        Console.ResetColor();
-                        //_view.AddJewel(x, y, rooms[x, y].HasDirt());
-                        _view.Refresh(rooms, _agentXPosition, _agentYPosition);
+                            Console.BackgroundColor = ConsoleColor.Blue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine($"Jewel generated at {x},{y}");
+                            Console.ResetColor();
+                            _view.Refresh(rooms, _agentXPosition, _agentYPosition);
+                        }        
                     }
-                    else  //60% chance of dirt
+                    else
                     {
-                        if(!rooms[x, y].HasDirt())
+                        if (!rooms[x, y].HasDirt())
+                        {
                             rooms[x, y].DirtGenerated();
-                        Console.BackgroundColor = ConsoleColor.Blue;
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($"Dirt generated at {x},{y}");
-                        Console.ResetColor();
-                        //_view.AddDirt(x, y, rooms[x, y].HasJewel());
-                        _view.Refresh(rooms, _agentXPosition, _agentYPosition);
+                            Console.BackgroundColor = ConsoleColor.Blue;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            Console.WriteLine($"Dirt generated at {x},{y}");
+                            Console.ResetColor();
+                            _view.Refresh(rooms, _agentXPosition, _agentYPosition);
+                        }
+                        
+                        
                     }
                 }
             }
