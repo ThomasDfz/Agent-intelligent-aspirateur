@@ -18,13 +18,13 @@ namespace VacuumAgent
             Application.SetCompatibleTextRenderingDefault(false);          
             Thread agentThread, environmentThread;
 
-            int x = 15;
-            int y = 20;
+            int x = 10;
+            int y = 10;
             GraphicalView view = new GraphicalView(x, y);
             Environment environment = new Environment(view, x, y);
-            environment.ChanceDirt = 10;
-            environment.ChanceJewelry = 5;
-            environment.FactorSleep = 1;
+            environment.ChanceDirt = 30;
+            environment.ChanceJewelry = 10;
+            environment.FactorSleep = 100;
 
             Agent agent = new Agent(environment);
             
@@ -40,6 +40,10 @@ namespace VacuumAgent
     public class GraphicalView : Form
     {
         Panel[,] _roomPanels;
+        Image dirtJewelImage = Image.FromFile("../../Assets/dirtjewel.png");
+        Image jewelImage = Image.FromFile("../../Assets/jewel.png");
+        Image dirtImage = Image.FromFile("../../Assets/dirt.png");
+        Image agentImage = Image.FromFile("../../Assets/agent.png");
         
         public GraphicalView(int x, int y)
         {
@@ -113,19 +117,19 @@ namespace VacuumAgent
         {
             for (int i = 0; i < rooms.GetLength(0); i++)
             {
-                for (int j = 0; j < rooms.GetLength(1); j++)
+                for (int j = 0; j < rooms.GetLength(0); j++)
                 {
-                    if(rooms[i, j].HasDirt() && rooms[i, j].HasJewel())
-                        _roomPanels[i, j].BackgroundImage = Image.FromFile("../../Assets/dirtjewel.png");
+                    if (rooms[i, j].HasDirt() && rooms[i, j].HasJewel())
+                        _roomPanels[i, j].BackgroundImage = dirtJewelImage;
                     else if (rooms[i, j].HasDirt())
-                        _roomPanels[i, j].BackgroundImage = Image.FromFile("../../Assets/dirt.png");
+                        _roomPanels[i, j].BackgroundImage = dirtImage;
                     else if (rooms[i, j].HasJewel())
-                        _roomPanels[i, j].BackgroundImage = Image.FromFile("../../Assets/jewel.png");
+                        _roomPanels[i, j].BackgroundImage = jewelImage;
                     else
                         _roomPanels[i, j].BackgroundImage = null;
                 }
             }
-            _roomPanels[agentXPosition, agentYPosition].BackgroundImage = Image.FromFile("../../Assets/agent.png");
+            _roomPanels[agentXPosition, agentYPosition].BackgroundImage = agentImage;
         }
     }
 }

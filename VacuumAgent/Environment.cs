@@ -20,7 +20,7 @@ namespace VacuumAgent
             get { return _caseY; }
         }
 
-        public int FactorSleep { get; set; } = 1;
+        public int FactorSleep { get; set; } = 100;
         public int ChanceDirt { get; set; } = 10;
         public int ChanceJewelry { get; set; } = 5;
 
@@ -34,7 +34,6 @@ namespace VacuumAgent
             _caseY = y;
             rooms = new Room[x, y];
 
-
             _view = view;
             for (int i = 0; i < NbCaseX; i++)
             {
@@ -43,7 +42,6 @@ namespace VacuumAgent
                     rooms[i, j] = new Room();
                 }
             }
-            Console.WriteLine("Environnement créé");
             _view.FormClosing += EndGame;
         }
 
@@ -93,8 +91,14 @@ namespace VacuumAgent
             }
         }
 
-        public void executeAgentAction(int x, int y)
+        public void JewelPickedUp(int x, int y)
         {
+            rooms[x, y].RemoveJewel();
+        }
+
+        public void DirtVaccumed(int x, int y)
+        {
+            rooms[x, y].RemoveDirt();
         }
     }
 
@@ -124,6 +128,17 @@ namespace VacuumAgent
         public bool HasJewel()
         {
             return _hasJewel;
+        }
+
+        public void RemoveJewel()
+        {
+            _hasJewel = false;
+        }
+
+        public void RemoveDirt()
+        {
+            _hasJewel = false;
+            _hasDirt = false;
         }
     }
 }
