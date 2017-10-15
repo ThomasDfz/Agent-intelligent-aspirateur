@@ -24,11 +24,9 @@ namespace VacuumAgent
         public void AddNewDirtyRoom(int x, int y)
         {
             Coordinates newCoords = new Coordinates(x, y);
-            Console.WriteLine(x);
-            Console.WriteLine(y);
             _newDirtyRooms.Add(newCoords);
         }
-        
+
         public void AddNewJewelyRoom(int x, int y)
         {
             Coordinates newCoords = new Coordinates(x, y);
@@ -45,23 +43,48 @@ namespace VacuumAgent
             {
                 _believedRooms[coord.x, coord.y].JewelGenerated();
             }
-            
             _newDirtyRooms.Clear();
             _newJewelyRooms.Clear();
         }
+
+        public string GetBelievedRoomContent(int x, int y)
+        {
+            if (_believedRooms[x, y].HasJewel() && _believedRooms[x, y].HasDirt())
+            {
+                return "dirt and jewel";
+            }
+            if (_believedRooms[x, y].HasDirt())
+            {
+                return "dirt";
+            }
+            if (_believedRooms[x, y].HasJewel())
+            {
+                return "jewel";
+            }
+            return "nothing";
+        }
+
+        public void JewelSupposedlyPickedUp(int x, int y)
+        {
+            _believedRooms[x, y].RemoveJewel();
+        }
+
+        public void DirtSupposedlyVaccumed(int x, int y)
+        {
+            _believedRooms[x, y].RemoveDirt();
+        }
     }
 
-    
+
     public struct Coordinates
     {
         public int x;
         public int y;
-        
+
         public Coordinates(int x, int y)
         {
             this.x = x;
             this.y = y;
-            Console.WriteLine("Coord created " + x + " , " + y);
-        }  
+        }
     }
 }

@@ -20,20 +20,19 @@ namespace VacuumAgent
             get { return _caseY; }
         }
 
-        public int FactorSleep { get; set; } = 1;
+        public int FactorSleep { get; set; } = 100;
         public int ChanceDirt { get; set; } = 10;
         public int ChanceJewelry { get; set; } = 5;
 
         public Room[,] rooms = new Room[10, 10];
         private GraphicalView _view;
         private int _agentXPosition, _agentYPosition;
-        
+
         public Environment(GraphicalView view, int x = 10, int y = 10)
         {
             _caseX = x;
             _caseY = y;
             rooms = new Room[x, y];
-
 
             _view = view;
             for (int i = 0; i < NbCaseX; i++)
@@ -43,7 +42,6 @@ namespace VacuumAgent
                     rooms[i, j] = new Room();
                 }
             }
-            Console.WriteLine("Environnement créé");
             _view.FormClosing += EndGame;
         }
 
@@ -51,7 +49,7 @@ namespace VacuumAgent
         {
             System.Environment.Exit(1);
         }
-        
+
         public void AsyncTask()
         {
             GenerateDirtOrJewel();
@@ -63,7 +61,7 @@ namespace VacuumAgent
             _agentYPosition = y;
             _view.Refresh(rooms, _agentXPosition, _agentYPosition);
         }
-        
+
         public void GenerateDirtOrJewel()
         {
             while (true)
@@ -93,8 +91,14 @@ namespace VacuumAgent
             }
         }
 
-        public void executeAgentAction(int x, int y)
+        public void JewelPickedUp(int x, int y)
         {
+            rooms[x, y].RemoveJewel();
+        }
+
+        public void DirtVaccumed(int x, int y)
+        {
+            rooms[x, y].RemoveDirt();
         }
     }
 
@@ -110,7 +114,7 @@ namespace VacuumAgent
         {
             _hasDirt = true;
         }
-        
+
         public void JewelGenerated()
         {
             _hasJewel = true;
@@ -124,6 +128,17 @@ namespace VacuumAgent
         public bool HasJewel()
         {
             return _hasJewel;
+        }
+
+        public void RemoveJewel()
+        {
+            _hasJewel = false;
+        }
+
+        public void RemoveDirt()
+        {
+            _hasJewel = false;
+            _hasDirt = false;
         }
     }
 }
