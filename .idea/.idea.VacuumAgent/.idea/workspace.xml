@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="23b5e433-5877-4b54-b7c6-5c539c1f62e8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/bin/Debug/VacuumAgent.exe" afterPath="$PROJECT_DIR$/VacuumAgent/bin/Debug/VacuumAgent.exe" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/bin/Debug/VacuumAgent.pdb" afterPath="$PROJECT_DIR$/VacuumAgent/bin/Debug/VacuumAgent.pdb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/obj/Debug/VacuumAgent.exe" afterPath="$PROJECT_DIR$/VacuumAgent/obj/Debug/VacuumAgent.exe" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/obj/Debug/VacuumAgent.pdb" afterPath="$PROJECT_DIR$/VacuumAgent/obj/Debug/VacuumAgent.pdb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.idea.VacuumAgent/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/.idea.VacuumAgent/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent.sln.DotSettings.user" afterPath="$PROJECT_DIR$/VacuumAgent.sln.DotSettings.user" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/Environment.cs" afterPath="$PROJECT_DIR$/VacuumAgent/Environment.cs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/Program.cs" afterPath="$PROJECT_DIR$/VacuumAgent/Program.cs" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VacuumAgent/obj/Debug/VacuumAgent.csproj.FileListAbsolute.txt" afterPath="$PROJECT_DIR$/VacuumAgent/obj/Debug/VacuumAgent.csproj.FileListAbsolute.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -90,8 +82,8 @@
       <file leaf-file-name="Beliefs.cs" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/VacuumAgent/Beliefs.cs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="44" column="13" lean-forward="false" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="13" />
+            <state relative-caret-position="275">
+              <caret line="49" column="35" lean-forward="true" selection-start-line="49" selection-start-column="35" selection-end-line="49" selection-end-column="35" />
               <folding>
                 <marker date="1508091314258" expanded="false" signature="6:47" ph="..." />
                 <marker date="1508091314258" expanded="true" signature="70:2363" ph="{...}" />
@@ -203,6 +195,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/VacuumAgent/Agent.cs" root0="FORCE_HIGHLIGHTING" />
@@ -376,7 +373,7 @@
       <workItem from="1507566895784" duration="16246000" />
       <workItem from="1507924775910" duration="13020000" />
       <workItem from="1508030955178" duration="287000" />
-      <workItem from="1508091099412" duration="400000" />
+      <workItem from="1508091099412" duration="563000" />
     </task>
     <task id="LOCAL-00001" summary="added intentions &amp; realise action">
       <created>1507940464787</created>
@@ -392,11 +389,18 @@
       <option name="project" value="LOCAL" />
       <updated>1508091335494</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="test">
+      <created>1508091509917</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1508091509917</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35772000" />
+    <option name="totallyTimeSpent" value="35935000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -409,10 +413,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28869376" sideWeight="0.50208336" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28869376" sideWeight="0.50208336" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28869376" sideWeight="0.49791667" order="2" side_tool="false" content_ui="tabs" />
@@ -1096,8 +1101,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/VacuumAgent/Beliefs.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="44" column="13" lean-forward="false" selection-start-line="44" selection-start-column="13" selection-end-line="44" selection-end-column="13" />
+        <state relative-caret-position="275">
+          <caret line="49" column="35" lean-forward="true" selection-start-line="49" selection-start-column="35" selection-end-line="49" selection-end-column="35" />
           <folding>
             <marker date="1508091314258" expanded="false" signature="6:47" ph="..." />
             <marker date="1508091314258" expanded="true" signature="70:2363" ph="{...}" />
