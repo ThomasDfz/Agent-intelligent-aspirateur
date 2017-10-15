@@ -11,7 +11,10 @@ namespace VacuumAgent
     {
         private int _x, _y;
         private Environment _environment;
+        
+        /*BDI*/
         private Beliefs _beliefs;
+        private Vertex _desire;
         private Stack<Actions> _intentions = new Stack<Actions>();
         
         public Agent(Environment environment)
@@ -54,14 +57,35 @@ namespace VacuumAgent
                         if(_y < _environment.NbCaseY) _y++;
                         break;
                     case Actions.PickUpJewel:
-                        Console.WriteLine("~~~ Picking up Jewel at " + _x + "," + _y + " ~~~");
-                        _environment.JewelPickedUp(_x, _y);
-                        _beliefs.JewelSupposedlyPickedUp(_x, _y);
+                        if (_beliefs.GetBelievedRoomContent(_x, _y) == "jewel" ||
+                            _beliefs.GetBelievedRoomContent(_x, _y) == "dirt and jewel")
+                        {
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.WriteLine("~~~ Picking up Jewel at " + _x + "," + _y + " ~~~");
+                            Console.ResetColor();
+                            _environment.JewelPickedUp(_x, _y);
+                            _beliefs.JewelSupposedlyPickedUp(_x, _y);
+                        }
+                        else
+                        {
+                            _intentions.Clear();
+                        } 
                         break;
                     case Actions.Vacuum:
-                        Console.WriteLine("~~~ Vacuuming dirt at " + _x + "," + _y + " ~~~");
-                        _environment.DirtVaccumed(_x, _y);
-                        _beliefs.DirtSupposedlyVaccumed(_x, _y);
+                        if (_beliefs.GetBelievedRoomContent(_x, _y) == "dirt")
+                        {
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.WriteLine("~~~ Vacuuming dirt at " + _x + "," + _y + " ~~~");
+                            Console.ResetColor();
+                            _environment.DirtVaccumed(_x, _y);
+                            _beliefs.DirtSupposedlyVaccumed(_x, _y);
+                        }
+                        else
+                        {
+                            _intentions.Clear();
+                        }
                         break;
                 }
                 _environment.setAgentPosition(_x, _y);
@@ -74,25 +98,63 @@ namespace VacuumAgent
             Tuple<int, int> nearestItemPosition = GetNearestBelievedItem();
             if (nearestItemPosition.Item1 != -1 && nearestItemPosition.Item2 != -1)
             {
+                switch (_beliefs.GetBelievedRoomContent(nearestItemPosition.Item1, nearestItemPosition.Item2))
+                {
+                    case "jewel and dirt":
+                        _intentions.Push(Actions.Vacuum);
+                        _intentions.Push(Actions.PickUpJewel);
+                        break;
+                    case "jewel":
+                        _intentions.Push(Actions.PickUpJewel);
+                        break;
+                    case "dirt":
+                        _intentions.Push(Actions.Vacuum);
+                        break;
+                }
                 if (nearestItemPosition.Item1 == _x && nearestItemPosition.Item2 == _y)
                 {
-                    switch (_beliefs.GetBelievedRoomContent(_x, _y))
-                    {
-                        case "jewel and dirt":
-                            _intentions.Push(Actions.Vacuum);
-                            _intentions.Push(Actions.PickUpJewel);
-                            break;
-                        case "jewel":
-                            _intentions.Push(Actions.PickUpJewel);
-                            break;
-                        case "dirt":
-                            _intentions.Push(Actions.Vacuum);
-                            break;
-                    }
+                    //then we're already on the item
                 }
                 else
                 {
-                    if (nearestItemPosition.Item1 < _x)
+                    Graph g = new Graph(_environment.NbCaseX, _environment.NbCaseY);
+                    int ids = 0;
+                    for (int i = 0; i < _environment.NbCaseX; i++)
+                    {
+                        for (int j = 0; j < _environment.NbCaseY; j++)
+                        {
+                            Vertex v = new Vertex(i, j, ids);
+                            g.AddVertex(v);
+                            ids++;
+                        }
+                    }
+                    for (int i = 0; i < _environment.NbCaseX - 1; i++)
+                    {
+                        for (int j = 0; j < _environment.NbCaseY - 1; j++)
+                        {
+                            g.AddEdge(g.FindVertexByCoordinates(i, j).Id, g.FindVertexByCoordinates(i+1, j).Id);
+                            g.AddEdge(g.FindVertexByCoordinates(i+1, j).Id, g.FindVertexByCoordinates(i, j).Id);
+                            g.AddEdge(g.FindVertexByCoordinates(i, j).Id, g.FindVertexByCoordinates(i, j+1).Id);
+                            g.AddEdge(g.FindVertexByCoordinates(i, j+1).Id, g.FindVertexByCoordinates(i, j).Id);
+                        }
+                    }
+                    for (int i = 0; i < _environment.NbCaseX - 1; i++)
+                    {
+                        g.AddEdge(g.FindVertexByCoordinates(i, _environment.NbCaseY - 1).Id, g.FindVertexByCoordinates(i+1, _environment.NbCaseY - 1).Id);
+                        g.AddEdge(g.FindVertexByCoordinates(i+1, _environment.NbCaseY - 1).Id, g.FindVertexByCoordinates(i, _environment.NbCaseY - 1).Id);
+                    }
+                    for (int j = 0; j < _environment.NbCaseY - 1; j++)
+                    {
+                        g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id, g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id);
+                        g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id, g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id);
+                    }
+                    if (g.BreadthFirstSearch(g.FindVertexByCoordinates(_x, _y).Id,
+                                             g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))
+                    {
+                        _desire = g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2);
+                        g.ShortestPath(_intentions, g.FindVertexByCoordinates(_x, _y).Id, _desire.Id);
+                    }
+                    /*if (nearestItemPosition.Item1 < _x)
                     {
                         for (int i = 0; i < _x - nearestItemPosition.Item1; i++)
                         {
@@ -119,7 +181,7 @@ namespace VacuumAgent
                         {
                             _intentions.Push(Actions.MoveUp);
                         }
-                    }
+                    }*/
                 }
             }
         }

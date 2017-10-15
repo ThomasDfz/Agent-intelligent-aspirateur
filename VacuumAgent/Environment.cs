@@ -24,6 +24,8 @@ namespace VacuumAgent
         public int ChanceDirt { get; set; } = 10;
         public int ChanceJewelry { get; set; } = 5;
 
+        private int _perf = 0;
+
         public Room[,] rooms = new Room[10, 10];
         private GraphicalView _view;
         private int _agentXPosition, _agentYPosition;
@@ -75,15 +77,23 @@ namespace VacuumAgent
                     int y = rnd.Next(0, NbCaseY);
                     if (dirtOrJewel < ChanceJewelry)
                     {
-                        rooms[x, y].JewelGenerated();
+                        if(!rooms[x, y].HasJewel())
+                            rooms[x, y].JewelGenerated();
+                        Console.BackgroundColor = ConsoleColor.Blue;
+                        Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine($"Jewel generated at {x},{y}");
+                        Console.ResetColor();
                         //_view.AddJewel(x, y, rooms[x, y].HasDirt());
                         _view.Refresh(rooms, _agentXPosition, _agentYPosition);
                     }
                     else  //60% chance of dirt
                     {
-                        rooms[x, y].DirtGenerated();
+                        if(!rooms[x, y].HasDirt())
+                            rooms[x, y].DirtGenerated();
+                        Console.BackgroundColor = ConsoleColor.Blue;
+                        Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine($"Dirt generated at {x},{y}");
+                        Console.ResetColor();
                         //_view.AddDirt(x, y, rooms[x, y].HasJewel());
                         _view.Refresh(rooms, _agentXPosition, _agentYPosition);
                     }
@@ -93,12 +103,25 @@ namespace VacuumAgent
 
         public void JewelPickedUp(int x, int y)
         {
+            if (rooms[x, y].HasJewel()) _perf += 2;
+            else _perf -= 2; //pick up nothing
             rooms[x, y].RemoveJewel();
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("PERF : " + _perf);
+            Console.ResetColor();
         }
 
         public void DirtVaccumed(int x, int y)
         {
+            if (rooms[x, y].HasJewel())  _perf -= 10; //what a mistake !
+            if (rooms[x, y].HasDirt()) _perf += 1;
+            else _perf -= 2; //vacuum nothing
             rooms[x, y].RemoveDirt();
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("PERF : " + _perf);
+            Console.ResetColor();
         }
     }
 
@@ -137,7 +160,7 @@ namespace VacuumAgent
 
         public void RemoveDirt()
         {
-            _hasJewel = false;
+            _hasJewel = false; //vaccuumed too
             _hasDirt = false;
         }
     }

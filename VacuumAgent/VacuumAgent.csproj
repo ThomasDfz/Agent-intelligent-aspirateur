@@ -46,6 +46,7 @@
     <Compile Include="Actions.cs" />
     <Compile Include="Agent.cs" />
     <Compile Include="Beliefs.cs" />
+    <Compile Include="BreadthFirstSearch.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
