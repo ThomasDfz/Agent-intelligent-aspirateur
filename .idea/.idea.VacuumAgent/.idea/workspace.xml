@@ -373,7 +373,7 @@
       <workItem from="1507566895784" duration="16246000" />
       <workItem from="1507924775910" duration="13020000" />
       <workItem from="1508030955178" duration="287000" />
-      <workItem from="1508091099412" duration="563000" />
+      <workItem from="1508091099412" duration="587000" />
     </task>
     <task id="LOCAL-00001" summary="added intentions &amp; realise action">
       <created>1507940464787</created>
@@ -396,11 +396,18 @@
       <option name="project" value="LOCAL" />
       <updated>1508091509917</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="push master">
+      <created>1508091675229</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1508091675229</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35935000" />
+    <option name="totallyTimeSpent" value="35959000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -447,7 +454,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added intentions &amp; realise action" />
     <MESSAGE value="test" />
-    <option name="LAST_COMMIT_MESSAGE" value="test" />
+    <MESSAGE value="push master" />
+    <option name="LAST_COMMIT_MESSAGE" value="push master" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
