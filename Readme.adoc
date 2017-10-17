@@ -1,16 +1,22 @@
 = TP IA 1
 
 :toc:
-:authors: Edf ThD
+:authors: Thomas Defossez  Edouard François 
 
-== gd 1
+== Introduction
 
-=== pt 1
+Ce TP est réalisé dans le cadre du cours d'IA de l'UQAC.
+Il a pour but de modéliser un agent simple ayant pour but d'aspirer la 
+poussière et ramasser les bijoux tombés sur le sol, le tout avec une efficacité 
+maximale. +
+Pour présenter ce TP, nous étudierons trois aspects :
+[circle]
+* L'environement
+* L'agent
+* **XXXXX**
 
-ma liste :
+== L'environnement
 
-[square]
-* toto
-** tototo
-* titi
-** tititi
+== L'agent basé sur les buts
+
+== ????
