@@ -17,6 +17,8 @@ namespace VacuumAgent
         private Vertex _desire;
         private Stack<Actions> _intentions = new Stack<Actions>();
         
+        private int _sensor_x, _sensor_y;
+        
         public Agent(Environment environment)
         {
             _environment = environment;
@@ -148,40 +150,29 @@ namespace VacuumAgent
                         g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id, g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id);
                         g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id, g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id);
                     }
-                    if (g.BreadthFirstSearch(g.FindVertexByCoordinates(_x, _y).Id,
-                                             g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))
+                    
+                    //TODO : refacto ci dessous
+                    Random randomlyChooseSearchAlgorithm = new Random();
+                    if (randomlyChooseSearchAlgorithm.Next(0, 2) == 0)
                     {
-                        _desire = g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2);
-                        g.ShortestPath(_intentions, g.FindVertexByCoordinates(_x, _y).Id, _desire.Id);
-                    }
-                    /*if (nearestItemPosition.Item1 < _x)
-                    {
-                        for (int i = 0; i < _x - nearestItemPosition.Item1; i++)
+                        if (g.BreadthFirstSearch(g.FindVertexByCoordinates(_x, _y).Id,
+                            g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))
                         {
-                            _intentions.Push(Actions.MoveLeft);
+                            _desire = g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2);
+                            g.ShortestPath(_intentions, g.FindVertexByCoordinates(_x, _y).Id, _desire.Id);
+                            Console.WriteLine("Path found with BFS");
                         }
                     }
                     else
                     {
-                        for (int i = 0; i < nearestItemPosition.Item1 - _x; i++)
+                        if (g.AstarSearch(g.FindVertexByCoordinates(_x, _y).Id,
+                            g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))
                         {
-                            _intentions.Push(Actions.MoveRight);
+                            _desire = g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2);
+                            g.ReconstructPath(_intentions, g.FindVertexByCoordinates(_x, _y).Id, _desire.Id);
+                            Console.WriteLine("Path found with A*");
                         }
-                    }
-                    if (nearestItemPosition.Item2 < _y)
-                    {
-                        for (int i = 0; i < _y - nearestItemPosition.Item2; i++)
-                        {
-                            _intentions.Push(Actions.MoveDown);
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < nearestItemPosition.Item2 - _y; i++)
-                        {
-                            _intentions.Push(Actions.MoveUp);
-                        }
-                    }*/
+                    }    
                 }
             }
         }
@@ -211,17 +202,17 @@ namespace VacuumAgent
 
         public void ObserveEnvironment()
         {
-            for (int i = 0; i < _environment.NbCaseX; i++)
+            for (_sensor_x = 0; _sensor_x < _environment.NbCaseX; _sensor_x++)
             {
-                for (int j = 0; j < _environment.NbCaseY; j++)
+                for (_sensor_y = 0; _sensor_y < _environment.NbCaseY; _sensor_y++)
                 {
-                    if (_environment.rooms[i, j].HasDirt())
+                    if (_environment.rooms[_sensor_x, _sensor_y].HasDirt())
                     {
-                        _beliefs.AddNewDirtyRoom(i, j);
+                        _beliefs.AddNewDirtyRoom(_sensor_x, _sensor_y);
                     }
-                    if (_environment.rooms[i, j].HasJewel())
+                    if (_environment.rooms[_sensor_x, _sensor_y].HasJewel())
                     {
-                        _beliefs.AddNewJewelyRoom(i, j);
+                        _beliefs.AddNewJewelyRoom(_sensor_x, _sensor_y);
                     }   
                 }
             }

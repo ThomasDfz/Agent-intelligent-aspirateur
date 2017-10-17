@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Windows.Forms.VisualStyles;
 
 namespace VacuumAgent
 {
+
     public class Vertex
     {
         public int Id;
@@ -42,6 +44,8 @@ namespace VacuumAgent
         private List<List<int>> _adjacencyList = new List<List<int>>();
         private List<Vertex> _vertices = new List<Vertex>();
         private int[] _predecessors;
+        private Dictionary<int, int> _cameFrom = new Dictionary<int, int>();
+        private const int _moveCost = 1;
 
         public Graph(int nbCasesX, int nbCasesY)
         {
@@ -88,7 +92,6 @@ namespace VacuumAgent
                 s = queue.Dequeue();
                 if (s == desire)
                 {
-                    //ShortestPath(_predecessors, root, desire);
                     return true;
                 }
                 IEnumerator<int> i = _adjacencyList[s].GetEnumerator();
@@ -116,6 +119,11 @@ namespace VacuumAgent
                 desire = _predecessors[desire];
             }
             PathIds.Push(_predecessors[desire]);
+            BuildIntentions(root, intentions, PathIds);
+        }
+
+        public void BuildIntentions(int root, Stack<Actions> intentions, Stack<int> PathIds)
+        {
             int actualX = FindVertexById(root).GetX();
             int actualY = FindVertexById(root).GetY();
             int nextX, nextY;
@@ -142,6 +150,102 @@ namespace VacuumAgent
                 actualX = nextX;
                 actualY = nextY;
             }
+        }
+        
+        public bool AstarSearch(int root, int desire)
+        {
+            //Set of evaluated nodes
+            List<int> closedSet = new List<int>();
+            
+            //Set of discovered nodes not yet evaluated
+            List<int> openSet = new List<int>();
+
+            //For each node, cose of getting from start to that node
+            Dictionary<int, double> gScore = new Dictionary<int, double>();
+
+            //For each node, total cost of getting from start to goal passing that node
+            Dictionary<int, double> fScore= new Dictionary<int, double>();
+
+            openSet.Add(root);
+            for (int i = 0; i < _verticesNb; i++)
+            {
+                fScore[i] = Int32.MaxValue;
+                gScore[i] = Int32.MaxValue;
+            }
+            
+            gScore[root] = 0;
+            fScore[root] = HeuristicCostEstimation(root, desire);
+
+            while (openSet.Count != 0)
+            {
+                int current = GetLowestFValue(openSet, fScore);
+                if (current == desire)
+                {
+                    //ReconstructPath();
+                    return true;
+                }
+                openSet.Remove(current);
+                closedSet.Add(current);
+
+                IEnumerator<int> iterator = _adjacencyList[current].GetEnumerator();
+                while (iterator.MoveNext())
+                {
+                    int neighbor = iterator.Current;
+                    if (closedSet.Contains(neighbor))
+                    {
+                        continue;
+                    }
+                    if (!openSet.Contains(neighbor))
+                    {
+                        openSet.Add(neighbor);
+                    }
+                    double tentative_gScore = gScore[current] + _moveCost;
+                    if (tentative_gScore >= gScore[neighbor])
+                    {
+                        continue;
+                    }
+                    _cameFrom[neighbor] = current;
+                    gScore[neighbor] = tentative_gScore;
+                    fScore[neighbor] = gScore[neighbor] + HeuristicCostEstimation(neighbor, desire);
+                }
+            }
+            return false;
+        }
+
+        public void ReconstructPath(Stack<Actions> intentions, int root, int desire)
+        {
+            Stack<int> total_path = new Stack<int>();
+            total_path.Push(desire);
+            while (_cameFrom.ContainsKey(desire))
+            {
+                desire = _cameFrom[desire];
+                total_path.Push(desire);
+            }
+            BuildIntentions(root, intentions, total_path);
+        }
+        
+        public double HeuristicCostEstimation(int start, int end)
+        {
+            int x1 = FindVertexById(start).GetX();
+            int y1 = FindVertexById(start).GetY();
+            int x2 = FindVertexById(end).GetX();
+            int y2 = FindVertexById(end).GetY();
+            return Math.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        }
+
+        public int GetLowestFValue(List<int> openSet, Dictionary<int, double> fScore)
+        {
+            double min = Int32.MaxValue;
+            int minNode = -1;
+            foreach (var node in openSet)
+            {
+                if (fScore[node] < min)
+                {
+                    minNode = node;
+                    min = fScore[node];
+                }
+            }
+            return minNode;
         }
     }
 }
