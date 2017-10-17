@@ -15,7 +15,7 @@ namespace VacuumAgent
         /*BDI*/
         private Beliefs _beliefs;
         private Vertex _desire;
-        private Stack<Actions> _intentions = new Stack<Actions>();
+        private Stack<Effectors> _intentions = new Stack<Effectors>();
         
         private int _sensor_x, _sensor_y;
         
@@ -46,19 +46,19 @@ namespace VacuumAgent
             {
                 switch (_intentions.Pop())
                 {
-                    case Actions.MoveDown:
+                    case Effectors.MoveDown:
                         if(_y > 0) _y--;
                         break;
-                    case Actions.MoveLeft:
+                    case Effectors.MoveLeft:
                         if(_x > 0) _x--;
                         break;
-                    case Actions.MoveRight:
+                    case Effectors.MoveRight:
                         if(_x < _environment.NbCaseX) _x++;
                         break;
-                    case Actions.MoveUp:
+                    case Effectors.MoveUp:
                         if(_y < _environment.NbCaseY) _y++;
                         break;
-                    case Actions.PickUpJewel:
+                    case Effectors.PickUpJewel:
                         if (_beliefs.GetBelievedRoomContent(_x, _y) == "jewel" ||
                             _beliefs.GetBelievedRoomContent(_x, _y) == "dirt and jewel")
                         {
@@ -74,7 +74,7 @@ namespace VacuumAgent
                             _intentions.Clear();
                         } 
                         break;
-                    case Actions.Vacuum:
+                    case Effectors.Vacuum:
                         if (_beliefs.GetBelievedRoomContent(_x, _y) == "dirt")
                         {
                             Console.BackgroundColor = ConsoleColor.Green;
@@ -103,14 +103,14 @@ namespace VacuumAgent
                 switch (_beliefs.GetBelievedRoomContent(nearestItemPosition.Item1, nearestItemPosition.Item2))
                 {
                     case "jewel and dirt":
-                        _intentions.Push(Actions.Vacuum);
-                        _intentions.Push(Actions.PickUpJewel);
+                        _intentions.Push(Effectors.Vacuum);
+                        _intentions.Push(Effectors.PickUpJewel);
                         break;
                     case "jewel":
-                        _intentions.Push(Actions.PickUpJewel);
+                        _intentions.Push(Effectors.PickUpJewel);
                         break;
                     case "dirt":
-                        _intentions.Push(Actions.Vacuum);
+                        _intentions.Push(Effectors.Vacuum);
                         break;
                 }
                 if (nearestItemPosition.Item1 == _x && nearestItemPosition.Item2 == _y)
@@ -152,8 +152,8 @@ namespace VacuumAgent
                     }
                     
                     //TODO : refacto ci dessous
-                    Random randomlyChooseSearchAlgorithm = new Random();
-                    if (randomlyChooseSearchAlgorithm.Next(0, 2) == 0)
+                    Random randomlyChosenSearchAlgorithm = new Random();
+                    if (randomlyChosenSearchAlgorithm.Next(0, 2) == 0)
                     {
                         if (g.BreadthFirstSearch(g.FindVertexByCoordinates(_x, _y).Id,
                             g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))

@@ -109,7 +109,7 @@ namespace VacuumAgent
             return false;
         }
 
-        public void ShortestPath(Stack<Actions> intentions, int root, int desire)
+        public void ShortestPath(Stack<Effectors> intentions, int root, int desire)
         {
             Stack<int> PathIds = new Stack<int>();
             PathIds.Push(desire);
@@ -122,7 +122,7 @@ namespace VacuumAgent
             BuildIntentions(root, intentions, PathIds);
         }
 
-        public void BuildIntentions(int root, Stack<Actions> intentions, Stack<int> PathIds)
+        public void BuildIntentions(int root, Stack<Effectors> intentions, Stack<int> PathIds)
         {
             int actualX = FindVertexById(root).GetX();
             int actualY = FindVertexById(root).GetY();
@@ -133,19 +133,19 @@ namespace VacuumAgent
                 nextY = FindVertexById(pathId).GetY();
                 if (nextX == actualX && nextY == actualY + 1 && actualY < _nbCasesY)
                 {
-                    intentions.Push(Actions.MoveUp);
+                    intentions.Push(Effectors.MoveUp);
                 }
                 else if (nextX == actualX && nextY == actualY - 1 && actualY > 0)
                 {
-                    intentions.Push(Actions.MoveDown);
+                    intentions.Push(Effectors.MoveDown);
                 }
                 else if (nextX == actualX + 1 && nextY == actualY && actualX < _nbCasesX)
                 {
-                    intentions.Push(Actions.MoveRight);
+                    intentions.Push(Effectors.MoveRight);
                 }
                 else if (nextX == actualX - 1 && nextY == actualY && actualX > 0)
                 {
-                    intentions.Push(Actions.MoveLeft);
+                    intentions.Push(Effectors.MoveLeft);
                 }
                 actualX = nextX;
                 actualY = nextY;
@@ -212,7 +212,7 @@ namespace VacuumAgent
             return false;
         }
 
-        public void ReconstructPath(Stack<Actions> intentions, int root, int desire)
+        public void ReconstructPath(Stack<Effectors> intentions, int root, int desire)
         {
             Stack<int> total_path = new Stack<int>();
             total_path.Push(desire);
