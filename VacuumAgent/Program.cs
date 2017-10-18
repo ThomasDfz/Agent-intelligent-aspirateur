@@ -36,12 +36,12 @@ namespace VacuumAgent
             Environment environment = new Environment(view, x, y);
             int chanceJ = 17;
             int chanceD = 26;
-            int factorSleep = 10;
+            int factorSleep = 20;
             try
             {
                 chanceJ = (int.Parse(args[2]) >= 10 && int.Parse(args[2]) <= 100) ? int.Parse(args[2]) : chanceJ;
                 chanceD = (int.Parse(args[3]) >= 10 && int.Parse(args[3]) <= 100) ? int.Parse(args[3]) : chanceD;
-                factorSleep = int.Parse(args[4]) >= 10 ? int.Parse(args[4]) : factorSleep;
+                factorSleep = int.Parse(args[4]) >= 20 ? int.Parse(args[4]) : factorSleep;
             }
             catch (Exception excp)
             {

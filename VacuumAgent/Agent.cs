@@ -39,7 +39,7 @@ namespace VacuumAgent
         {
             while (true)
             {
-                Thread.Sleep(18 * _environment.FactorSleep);
+                //Thread.Sleep(18 * _environment.FactorSleep);
                 ObserveEnvironment();
                 UpdateState();
                 PickAction();
@@ -159,7 +159,8 @@ namespace VacuumAgent
                     _intentions.Clear();
                     break;
                 }
-                switch (_intentions.Pop())
+                Effectors intention = _intentions.Pop();
+                switch (intention)
                 {
                     case Effectors.MoveDown:
                         if(_y > 0) _y--;
@@ -207,7 +208,8 @@ namespace VacuumAgent
                 }
                 actionsDone++;
                 _environment.ExecuteAgentAction(_x, _y);
-                Thread.Sleep(_environment.FactorSleep);
+                int duration = EffectorDuration.getEffectorDuration(intention);
+                Thread.Sleep(duration * _environment.FactorSleep);
             }
         }
 

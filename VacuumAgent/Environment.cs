@@ -66,7 +66,7 @@ namespace VacuumAgent
         { 
             while (true)
             {
-                Thread.Sleep(10 * FactorSleep);
+                Thread.Sleep(5 * FactorSleep);
                 GenerateDirtOrJewel();
             }
         }
