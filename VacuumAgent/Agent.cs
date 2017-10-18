@@ -24,7 +24,7 @@ namespace VacuumAgent
             _environment = environment;
             _x = 0;
             _y = 0;
-            _environment.setAgentPosition(_x, _y);
+            _environment.ExecuteAgentAction(_x, _y);
             _beliefs = new Beliefs(environment.NbCaseX, environment.NbCaseY);
         }
         
@@ -44,17 +44,17 @@ namespace VacuumAgent
         }
 
         /*Notice dirty rooms and rooms containing a lost Jewel*/
-        public void ObserveEnvironment()
+        private void ObserveEnvironment()
         {
             for (_sensorX = 0; _sensorX < _environment.NbCaseX; _sensorX++)
             {
                 for (_sensorY = 0; _sensorY < _environment.NbCaseY; _sensorY++)
                 {
-                    if (_environment.rooms[_sensorX, _sensorY].HasDirt())
+                    if (_environment.Rooms[_sensorX, _sensorY].HasDirt())
                     {
                         _beliefs.AddNewDirtyRoom(_sensorX, _sensorY);
                     }
-                    if (_environment.rooms[_sensorX, _sensorY].HasJewel())
+                    if (_environment.Rooms[_sensorX, _sensorY].HasJewel())
                     {
                         _beliefs.AddNewJewelyRoom(_sensorX, _sensorY);
                     }   
@@ -69,14 +69,14 @@ namespace VacuumAgent
         }
         
         /*Pick a list of intended actions according to his beliefs and desires*/
-        public void PickAction()
+        private void PickAction()
         {
             Coordinates nearestItemPosition = GetNearestBelievedItem();
             if (nearestItemPosition.x != -1 && nearestItemPosition.y != -1)
             {
                 switch (_beliefs.GetBelievedRoomContent(nearestItemPosition.x, nearestItemPosition.y))
                 {
-                    case "jewel and dirt":
+                    case "dirt and jewel":
                         _intentions.Push(Effectors.Vacuum);
                         _intentions.Push(Effectors.PickUpJewel);
                         break;
@@ -124,7 +124,7 @@ namespace VacuumAgent
         }
         
         //Realise agent intentions
-        public void RealiseAction()
+        private void RealiseAction()
         {
             while (_intentions.Count != 0)
             {
@@ -174,13 +174,13 @@ namespace VacuumAgent
                         }
                         break;
                 }
-                _environment.setAgentPosition(_x, _y);
+                _environment.ExecuteAgentAction(_x, _y);
                 Thread.Sleep(_environment.FactorSleep);
             }
         }
 
         //Based on current beliefs, get the coordinates of the nearest jewel or dirt
-        public Coordinates GetNearestBelievedItem()
+        private Coordinates GetNearestBelievedItem()
         {
             int nearestX = -1;
             int nearestY = -1;

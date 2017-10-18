@@ -9,105 +9,130 @@ namespace VacuumAgent
 {
     public class Environment
     {
-        private int _caseX = 10;
-        private int _caseY = 10;
-        public int NbCaseX
-        {
-            get { return _caseX; }
-        }
-        public int NbCaseY
-        {
-            get { return _caseY; }
-        }
+        public int NbCaseX { get; }
+        public int NbCaseY { get; }
 
         public int FactorSleep { get; set; } = 100;
-        public int ChanceDirt { get; set; } = 10;
-        public int ChanceJewelry { get; set; } = 5;
+        private int _chanceDirt = 10;
+        private int _chanceJewel = 5;
 
-        private int _perf = 0;
-
-        public Room[,] rooms = new Room[10, 10];
+        private int _perf = 1;
+        private int _goodActionReward;
+        
+        public Room[,] Rooms;
         private GraphicalView _view;
         private int _agentXPosition, _agentYPosition;
         
         public Environment(GraphicalView view, int x = 10, int y = 10)
         {
-            _caseX = x;
-            _caseY = y;
-            rooms = new Room[x, y];
-
+            NbCaseX = x;
+            NbCaseY = y;
+            Rooms = new Room[x, y];
             _view = view;
+            
             for (int i = 0; i < NbCaseX; i++)
             {
                 for (int j = 0; j < NbCaseY; j++)
                 {
-                    rooms[i, j] = new Room();
+                    Rooms[i, j] = new Room();
                 }
             }
+            
+            //Reward depends on the average length traveled from one random room to another.
+            _goodActionReward = (int) Math.Floor(Math.Sqrt(NbCaseX*NbCaseX + NbCaseY*NbCaseY));
             _view.FormClosing += EndGame;
         }
 
-        private void EndGame(object sender, FormClosingEventArgs e)
+        public void SetJewelryAndDirtGenerationPercentages(int chanceJewel, int chanceDirt)
+        {
+            _chanceDirt = chanceDirt;
+            _chanceJewel = chanceJewel;       
+            if (chanceDirt + chanceJewel > 100)
+            {
+                _chanceDirt = 60;
+                _chanceJewel = 40;
+            }
+        }
+
+        private static void EndGame(object sender, FormClosingEventArgs e)
         {
             System.Environment.Exit(1);
         }
         
         public void AsyncTask()
-        {
-            GenerateDirtOrJewel();
-        }
-
-        public void setAgentPosition(int x, int y)
-        {
-            _agentXPosition = x;
-            _agentYPosition = y;
-            _view.Refresh(rooms, _agentXPosition, _agentYPosition);
-        }
-        
-        public void GenerateDirtOrJewel()
-        {
+        { 
             while (true)
             {
                 Thread.Sleep(10 * FactorSleep);
-                Random rnd = new Random();
-                int dirtOrJewel = rnd.Next(0, 100);
-                if (dirtOrJewel < ChanceDirt || dirtOrJewel < ChanceJewelry)
+                GenerateDirtOrJewel();
+            }
+        }
+
+        public void ExecuteAgentAction(int x, int y)
+        {
+            _agentXPosition = x;
+            _agentYPosition = y;
+            _perf--; //cost of any action
+            _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
+        }
+             
+        public void GenerateDirtOrJewel()
+        {
+            Random rnd = new Random();
+            int dirtOrJewel = rnd.Next(0, 100);
+            if (dirtOrJewel <= _chanceJewel + _chanceDirt)
+            {
+                int x = rnd.Next(0, NbCaseX);
+                int y = rnd.Next(0, NbCaseY);
+                if (_chanceJewel < _chanceDirt && dirtOrJewel <= _chanceJewel)
                 {
-                    int x = rnd.Next(0, NbCaseX);
-                    int y = rnd.Next(0, NbCaseY);
-                    if (dirtOrJewel < ChanceJewelry)
-                    {
-                        if (!rooms[x, y].HasJewel())
-                        {
-                            rooms[x, y].JewelGenerated();
-                            Console.BackgroundColor = ConsoleColor.Blue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.WriteLine($"Jewel generated at {x},{y}");
-                            Console.ResetColor();
-                            _view.Refresh(rooms, _agentXPosition, _agentYPosition);
-                        }        
-                    }
-                    else
-                    {
-                        if (!rooms[x, y].HasDirt())
-                        {
-                            rooms[x, y].DirtGenerated();
-                            Console.BackgroundColor = ConsoleColor.Blue;
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.WriteLine($"Dirt generated at {x},{y}");
-                            Console.ResetColor();
-                            _view.Refresh(rooms, _agentXPosition, _agentYPosition);
-                        }
-                    }
+                    GenerateJewel(x, y);
                 }
+                else if (_chanceDirt < _chanceJewel && dirtOrJewel <= _chanceDirt)
+                {
+                    GenerateDirt(x, y);       
+                }
+                else if (_chanceJewel >= _chanceDirt)
+                {
+                    GenerateJewel(x, y);
+                }
+                else if(_chanceDirt >= _chanceJewel)
+                {
+                    GenerateDirt(x, y);
+                }
+            }
+        }
+
+        public void GenerateJewel(int x, int y)
+        {
+            if (!Rooms[x, y].HasJewel())
+            {
+                Rooms[x, y].JewelGenerated();
+                Console.BackgroundColor = ConsoleColor.Blue;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"Jewel generated at {x},{y}");
+                Console.ResetColor();
+                _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
+            }
+        }
+
+        public void GenerateDirt(int x, int y)
+        {
+            if (!Rooms[x, y].HasDirt())
+            {
+                Rooms[x, y].DirtGenerated();
+                Console.BackgroundColor = ConsoleColor.Blue;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"Dirt generated at {x},{y}");
+                Console.ResetColor();
+                _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
             }
         }
 
         public void JewelPickedUp(int x, int y)
         {
-            if (rooms[x, y].HasJewel()) _perf += 2;
-            else _perf -= 2; //pick up nothing
-            rooms[x, y].RemoveJewel();
+            if (Rooms[x, y].HasJewel()) _perf += _goodActionReward;
+            Rooms[x, y].RemoveJewel();
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("PERF : " + _perf);
@@ -116,10 +141,9 @@ namespace VacuumAgent
 
         public void DirtVaccumed(int x, int y)
         {
-            if (rooms[x, y].HasJewel())  _perf -= 10; //what a mistake !
-            if (rooms[x, y].HasDirt()) _perf += 1;
-            else _perf -= 2; //vacuum nothing
-            rooms[x, y].RemoveDirt();
+            if (Rooms[x, y].HasJewel())  _perf -= 50; //what a mistake !
+            if (Rooms[x, y].HasDirt()) _perf += _goodActionReward;
+            Rooms[x, y].Vacuum();
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("PERF : " + _perf);
@@ -131,7 +155,8 @@ namespace VacuumAgent
     {
         private bool _hasDirt, _hasJewel;
 
-        public Room(){
+        public Room()
+        {
             _hasDirt = _hasJewel = false;
         }
 
@@ -160,7 +185,7 @@ namespace VacuumAgent
             _hasJewel = false;
         }
 
-        public void RemoveDirt()
+        public void Vacuum()
         {
             _hasJewel = false; //vaccuumed too
             _hasDirt = false;

@@ -21,10 +21,10 @@ namespace VacuumAgent
             int x = 10;
             int y = 10;
             GraphicalView view = new GraphicalView(x, y);
+            
             Environment environment = new Environment(view, x, y);
-            environment.ChanceDirt = 30;
-            environment.ChanceJewelry = 10;
-            environment.FactorSleep = 100;
+            environment.SetJewelryAndDirtGenerationPercentages(17, 26);
+            environment.FactorSleep = 100; //Overall waiting between 2 actions.
 
             Agent agent = new Agent(environment);
             
@@ -48,10 +48,10 @@ namespace VacuumAgent
         public GraphicalView(int x, int y)
         {
             Size = new Size(40 * (y) + 16 , 40 * (x+1));
-            print(x, y);
+            Print(x, y);
         }
 
-        public void print(int x = 10, int y = 10)
+        public void Print(int x = 10, int y = 10)
         {      
             const int tileSize = 40;
             
@@ -82,37 +82,6 @@ namespace VacuumAgent
             }
         }
 
-        /*public void AddDirt(int n, int m, bool hasJewel)
-        {
-            if (hasJewel)
-                _roomPanels[n, m].BackgroundImage = Image.FromFile("../../Assets/dirtjewel.png");
-            else
-                _roomPanels[n, m].BackgroundImage = Image.FromFile("../../Assets/dirt.png");
-        }
-
-        public void RemoveDirt(int n, int m, bool hasJewel)
-        {
-            if(hasJewel)
-                _roomPanels[n, m].BackgroundImage = Image.FromFile("../../Assets/jewel.png");
-            else
-                _roomPanels[n, m].BackgroundImage = null;
-        }
-        
-        public void AddJewel(int n, int m, bool hasDirt)
-        {
-            if(hasDirt)
-                _roomPanels[n, m].BackgroundImage = Image.FromFile("../../Assets/dirtjewel.png");
-            else
-                _roomPanels[n, m].BackgroundImage = Image.FromFile("../../Assets/jewel.png");
-        }
-
-        public void RemoveJewel(int n, int m, bool hasDirt)
-        {
-            if (hasDirt)
-                _roomPanels[n, m].BackgroundImage = Image.FromFile("../../Assets/dirt.png");
-            else
-                _roomPanels[n, m].BackgroundImage = null;
-        }*/
         public void Refresh(Room[,] rooms, int agentXPosition, int agentYPosition)
         {
             for (int i = 0; i < rooms.GetLength(0); i++)

@@ -71,7 +71,7 @@ namespace VacuumAgent
 
         public void DirtSupposedlyVaccumed(int x, int y)
         {
-            _believedRooms[x, y].RemoveDirt();
+            _believedRooms[x, y].Vacuum();
         }
     }
 
