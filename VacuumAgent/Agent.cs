@@ -17,7 +17,7 @@ namespace VacuumAgent
         private Vertex _desire;
         private Stack<Effectors> _intentions = new Stack<Effectors>();
         
-        private int _sensor_x, _sensor_y;
+        private int _sensorX, _sensorY;
         
         public Agent(Environment environment)
         {
@@ -27,6 +27,9 @@ namespace VacuumAgent
             _environment.setAgentPosition(_x, _y);
             _beliefs = new Beliefs(environment.NbCaseX, environment.NbCaseY);
         }
+        
+        public int GetX() { return _x; }
+        public int GetY() { return _y; }
 
         public void AsyncWork()
         {
@@ -40,6 +43,87 @@ namespace VacuumAgent
             }
         }
 
+        /*Notice dirty rooms and rooms containing a lost Jewel*/
+        public void ObserveEnvironment()
+        {
+            for (_sensorX = 0; _sensorX < _environment.NbCaseX; _sensorX++)
+            {
+                for (_sensorY = 0; _sensorY < _environment.NbCaseY; _sensorY++)
+                {
+                    if (_environment.rooms[_sensorX, _sensorY].HasDirt())
+                    {
+                        _beliefs.AddNewDirtyRoom(_sensorX, _sensorY);
+                    }
+                    if (_environment.rooms[_sensorX, _sensorY].HasJewel())
+                    {
+                        _beliefs.AddNewJewelyRoom(_sensorX, _sensorY);
+                    }   
+                }
+            }
+        }
+        
+        /*Update agent's beliefs about how the whole manor actually is*/
+        private void UpdateState() 
+        {
+            _beliefs.UpdateBelievedRooms();
+        }
+        
+        /*Pick a list of intended actions according to his beliefs and desires*/
+        public void PickAction()
+        {
+            Coordinates nearestItemPosition = GetNearestBelievedItem();
+            if (nearestItemPosition.x != -1 && nearestItemPosition.y != -1)
+            {
+                switch (_beliefs.GetBelievedRoomContent(nearestItemPosition.x, nearestItemPosition.y))
+                {
+                    case "jewel and dirt":
+                        _intentions.Push(Effectors.Vacuum);
+                        _intentions.Push(Effectors.PickUpJewel);
+                        break;
+                    case "jewel":
+                        _intentions.Push(Effectors.PickUpJewel);
+                        break;
+                    case "dirt":
+                        _intentions.Push(Effectors.Vacuum);
+                        break;
+                }
+                if (nearestItemPosition.x == _x && nearestItemPosition.y == _y)
+                {
+                    //then we're already on the item
+                }
+                else
+                {
+                    Graph g = BuildGraphAccordingToEnvironment();
+                    
+                    //Randomly choose between the informed and uninformed algorithm.
+                    Random randomlyChosenSearchAlgorithm = new Random();
+                    Vertex localRoom = g.FindVertexByCoordinates(_x, _y);
+                    _desire = g.FindVertexByCoordinates(nearestItemPosition.x, nearestItemPosition.y);
+                    if (randomlyChosenSearchAlgorithm.Next(0, 2) == 0)
+                    {
+                        BreadthFirstSearch bfs = new BreadthFirstSearch(g);
+                        if (bfs.ExploreAndSearch(localRoom.Id, _desire.Id))
+                        {
+                            Stack<int> pathIds = bfs.BuildShortestPath(_intentions, localRoom.Id, _desire.Id);
+                            UpdateIntentions(pathIds, g);
+                            Console.WriteLine("Path found with BFS");
+                        }
+                    }
+                    else
+                    {
+                        AstarSearch astar = new AstarSearch(g);
+                        if (astar.ExploreAndSearch(localRoom.Id, _desire.Id))
+                        {
+                            Stack<int> pathIds = astar.BuildShortestPath(_intentions, localRoom.Id, _desire.Id);
+                            UpdateIntentions(pathIds, g);
+                            Console.WriteLine("Path found with A*");
+                        }
+                    }    
+                }
+            }
+        }
+        
+        //Realise agent intentions
         public void RealiseAction()
         {
             while (_intentions.Count != 0)
@@ -94,90 +178,9 @@ namespace VacuumAgent
                 Thread.Sleep(_environment.FactorSleep);
             }
         }
-        
-        public void PickAction()
-        {
-            Tuple<int, int> nearestItemPosition = GetNearestBelievedItem();
-            if (nearestItemPosition.Item1 != -1 && nearestItemPosition.Item2 != -1)
-            {
-                switch (_beliefs.GetBelievedRoomContent(nearestItemPosition.Item1, nearestItemPosition.Item2))
-                {
-                    case "jewel and dirt":
-                        _intentions.Push(Effectors.Vacuum);
-                        _intentions.Push(Effectors.PickUpJewel);
-                        break;
-                    case "jewel":
-                        _intentions.Push(Effectors.PickUpJewel);
-                        break;
-                    case "dirt":
-                        _intentions.Push(Effectors.Vacuum);
-                        break;
-                }
-                if (nearestItemPosition.Item1 == _x && nearestItemPosition.Item2 == _y)
-                {
-                    //then we're already on the item
-                }
-                else
-                {
-                    Graph g = new Graph(_environment.NbCaseX, _environment.NbCaseY);
-                    int ids = 0;
-                    for (int i = 0; i < _environment.NbCaseX; i++)
-                    {
-                        for (int j = 0; j < _environment.NbCaseY; j++)
-                        {
-                            Vertex v = new Vertex(i, j, ids);
-                            g.AddVertex(v);
-                            ids++;
-                        }
-                    }
-                    for (int i = 0; i < _environment.NbCaseX - 1; i++)
-                    {
-                        for (int j = 0; j < _environment.NbCaseY - 1; j++)
-                        {
-                            g.AddEdge(g.FindVertexByCoordinates(i, j).Id, g.FindVertexByCoordinates(i+1, j).Id);
-                            g.AddEdge(g.FindVertexByCoordinates(i+1, j).Id, g.FindVertexByCoordinates(i, j).Id);
-                            g.AddEdge(g.FindVertexByCoordinates(i, j).Id, g.FindVertexByCoordinates(i, j+1).Id);
-                            g.AddEdge(g.FindVertexByCoordinates(i, j+1).Id, g.FindVertexByCoordinates(i, j).Id);
-                        }
-                    }
-                    for (int i = 0; i < _environment.NbCaseX - 1; i++)
-                    {
-                        g.AddEdge(g.FindVertexByCoordinates(i, _environment.NbCaseY - 1).Id, g.FindVertexByCoordinates(i+1, _environment.NbCaseY - 1).Id);
-                        g.AddEdge(g.FindVertexByCoordinates(i+1, _environment.NbCaseY - 1).Id, g.FindVertexByCoordinates(i, _environment.NbCaseY - 1).Id);
-                    }
-                    for (int j = 0; j < _environment.NbCaseY - 1; j++)
-                    {
-                        g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id, g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id);
-                        g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id, g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id);
-                    }
-                    
-                    //TODO : refacto ci dessous
-                    Random randomlyChosenSearchAlgorithm = new Random();
-                    if (randomlyChosenSearchAlgorithm.Next(0, 2) == 0)
-                    {
-                        if (g.BreadthFirstSearch(g.FindVertexByCoordinates(_x, _y).Id,
-                            g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))
-                        {
-                            _desire = g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2);
-                            g.ShortestPath(_intentions, g.FindVertexByCoordinates(_x, _y).Id, _desire.Id);
-                            Console.WriteLine("Path found with BFS");
-                        }
-                    }
-                    else
-                    {
-                        if (g.AstarSearch(g.FindVertexByCoordinates(_x, _y).Id,
-                            g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2).Id))
-                        {
-                            _desire = g.FindVertexByCoordinates(nearestItemPosition.Item1, nearestItemPosition.Item2);
-                            g.ReconstructPath(_intentions, g.FindVertexByCoordinates(_x, _y).Id, _desire.Id);
-                            Console.WriteLine("Path found with A*");
-                        }
-                    }    
-                }
-            }
-        }
 
-        public Tuple<int, int> GetNearestBelievedItem()
+        //Based on current beliefs, get the coordinates of the nearest jewel or dirt
+        public Coordinates GetNearestBelievedItem()
         {
             int nearestX = -1;
             int nearestY = -1;
@@ -197,40 +200,80 @@ namespace VacuumAgent
                     }
                 }
             }
-            return Tuple.Create(nearestX, nearestY);
+            return new Coordinates(nearestX, nearestY);
         }
-
-        public void ObserveEnvironment()
+        
+        //Get new intentions based on a path of rooms returned by a search algorithm.
+        private void UpdateIntentions(Stack<int> pathIds, Graph g)
         {
-            for (_sensor_x = 0; _sensor_x < _environment.NbCaseX; _sensor_x++)
+            int actualX = _x;
+            int actualY = _y;
+            int nextX, nextY;
+            foreach (var pathId in pathIds)
             {
-                for (_sensor_y = 0; _sensor_y < _environment.NbCaseY; _sensor_y++)
+                nextX = g.FindVertexById(pathId).GetX();
+                nextY = g.FindVertexById(pathId).GetY();
+                if (nextX == actualX && nextY == actualY + 1 && actualY < _environment.NbCaseY)
                 {
-                    if (_environment.rooms[_sensor_x, _sensor_y].HasDirt())
-                    {
-                        _beliefs.AddNewDirtyRoom(_sensor_x, _sensor_y);
-                    }
-                    if (_environment.rooms[_sensor_x, _sensor_y].HasJewel())
-                    {
-                        _beliefs.AddNewJewelyRoom(_sensor_x, _sensor_y);
-                    }   
+                    _intentions.Push(Effectors.MoveUp);
                 }
+                else if (nextX == actualX && nextY == actualY - 1 && actualY > 0)
+                {
+                    _intentions.Push(Effectors.MoveDown);
+                }
+                else if (nextX == actualX + 1 && nextY == actualY && actualX < _environment.NbCaseX)
+                {
+                    _intentions.Push(Effectors.MoveRight);
+                }
+                else if (nextX == actualX - 1 && nextY == actualY && actualX > 0)
+                {
+                    _intentions.Push(Effectors.MoveLeft);
+                }
+                actualX = nextX;
+                actualY = nextY;
             }
         }
 
-        private void UpdateState()
+        //Building a rectangular directed graph.
+        public Graph BuildGraphAccordingToEnvironment()
         {
-            _beliefs.UpdateBelievedRooms();
-        }
-
-        public int GetX()
-        {
-            return _x;
-        }
-
-        public int GetY()
-        {
-            return _y;
-        }
+            Graph g = new Graph(_environment.NbCaseX, _environment.NbCaseY);
+            var ids = 0;
+            for (var i = 0; i < _environment.NbCaseX; i++)
+            {
+                for (var j = 0; j < _environment.NbCaseY; j++)
+                {
+                    Vertex v = new Vertex(i, j, ids);
+                    g.AddVertex(v);
+                    ids++;
+                }
+            }
+            for (var i = 0; i < _environment.NbCaseX - 1; i++)
+            {
+                for (var j = 0; j < _environment.NbCaseY - 1; j++)
+                {
+                    //Edges are directed so must be both ways
+                    g.AddEdge(g.FindVertexByCoordinates(i, j).Id, g.FindVertexByCoordinates(i+1, j).Id);
+                    g.AddEdge(g.FindVertexByCoordinates(i+1, j).Id, g.FindVertexByCoordinates(i, j).Id);
+                    g.AddEdge(g.FindVertexByCoordinates(i, j).Id, g.FindVertexByCoordinates(i, j+1).Id);
+                    g.AddEdge(g.FindVertexByCoordinates(i, j+1).Id, g.FindVertexByCoordinates(i, j).Id);
+                }
+            }
+            for (var i = 0; i < _environment.NbCaseX - 1; i++)
+            {
+                g.AddEdge(g.FindVertexByCoordinates(i, _environment.NbCaseY - 1).Id, 
+                          g.FindVertexByCoordinates(i+1, _environment.NbCaseY - 1).Id);
+                g.AddEdge(g.FindVertexByCoordinates(i+1, _environment.NbCaseY - 1).Id,
+                          g.FindVertexByCoordinates(i, _environment.NbCaseY - 1).Id);
+            }
+            for (var j = 0; j < _environment.NbCaseY - 1; j++)
+            {
+                g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id, 
+                          g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id);
+                g.AddEdge(g.FindVertexByCoordinates(_environment.NbCaseX - 1, j+1).Id, 
+                          g.FindVertexByCoordinates(_environment.NbCaseX - 1, j).Id);
+            }
+            return g;
+        }    
     }
 }

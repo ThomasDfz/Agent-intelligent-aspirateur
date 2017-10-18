@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AstarSearch.cs" />
+    <Compile Include="BreadthFirstSearch.cs" />
     <Compile Include="Effectors.cs" />
     <Compile Include="Agent.cs" />
     <Compile Include="Beliefs.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="Environment.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IShortestPathAlgorithm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\agent.png" />

@@ -98,8 +98,6 @@ namespace VacuumAgent
                             Console.ResetColor();
                             _view.Refresh(rooms, _agentXPosition, _agentYPosition);
                         }
-                        
-                        
                     }
                 }
             }
