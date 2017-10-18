@@ -13,10 +13,19 @@ Pour présenter ce TP, nous étudierons trois aspects :
 [circle]
 * L'environement
 * L'agent
-* **XXXXX**
+* L'affichage
 
 == L'environnement
 
 == L'agent basé sur les buts
 
-== ????
+== L'affichage
+
+NOTE: Les images de la grille étant affichées en temps que background, nous ne 
+pouvions qu'afficher une image à la fois par case, c'est ainsi que si l'agent 
+passe sur une case déjà occupé par de la poussière ou un bijoux, ces images vont 
+disparaitre (et réaparaitre lorsque l'agent change de case) sans obligatoirement
+que l'agent les aient aspiré ou ramassé. +
+Pour être certain que lorsque l'agent passe sur une case contenant les deux 
+objets il ai bien ramassé les bijoux puis aspiré la poussière, il faut regarder
+les messages de la console.
