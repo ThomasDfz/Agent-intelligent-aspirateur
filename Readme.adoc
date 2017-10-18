@@ -17,6 +17,43 @@ Pour présenter ce TP, nous étudierons trois aspects :
 
 == L'environnement
 
+=== Caractéristiques
+
+L'environnement possède les propriétés suivantes :
+
+[circle]
+* Complétement observable, car les capteurs de l'agent peuvent voir toutes les 
+pièces du manoir.
+* Stochastique, car l'aléatoire joue un rôle dans l'apparition des objets.
+* Séquentiel car un épisode dépend du précédent notamment dans la position de l'agent
+* Dynamique, en effet une poussière ou un bijou peut apparaître alors que l'agent
+est en pleine délibération
+* Discret car il existe un nombre fini d'états.
+* Enfin c'est un environnement ne disposant que d'un agent.
+
+=== Notre implémentation
+
+L'environnement est constitué d'un damier rectangulaire, de dimentions x et y 
+pouvant être changés. Il consiste en un tableau à 2 dimensions de _Room_, 
+classe créée pour représenter chaque pièce, pouvant contenir de la poussière,
+un bijou, les deux ou aucun des deux.
+L'environnement va, dans un fil d'éxécution différent de l'agent et de 
+l'affichage, sporadiquement générer de la poussière ou un bijou (_GenerateDirtOrJewel()_)
+dans une des cases selon des probabilités que nous fixons.
+Si une poussière doit être générée dans une pièce en contenant déjà, on ne 
+cherche pas à trouver une nouvelle pièce propre, en effet la présence de poussière 
+étant modélisée par un booléen, la pièce est simplement plus sale qu'avant mais 
+un seul coup d'aspirateur en viendra à bout. De même pour les bijoux.
+L'environnement va être informé des actions de l'agent et pourra ainsi mettre à 
+jour le contenu de ses pièces ainsi qu'informer la vue de se rafraîchir. (_ExecuteAgentAction()_)
+
+L'environnement détient aussi la mesure de performance de l'agent. Elle est liée
+à l'électricité utilisée par l'agent (-1 par action : mouvement, ramasser un bijou, 
+aspirer) et un certain nombre de points est ajouté à cette mesure de performance 
+basé sur la taille de l'environnement (pour pouvoir être équitable si 
+l'environnement est grand). Si l'agent aspire un bijou, la mesure de performance 
+baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'agent.
+
 == L'agent basé sur les buts
 
 == L'affichage
