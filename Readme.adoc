@@ -37,6 +37,7 @@ L'environnement est constitué d'un damier rectangulaire, de dimentions x et y
 pouvant être changés. Il consiste en un tableau à 2 dimensions de _Room_, 
 classe créée pour représenter chaque pièce, pouvant contenir de la poussière,
 un bijou, les deux ou aucun des deux.
+
 L'environnement va, dans un fil d'éxécution différent de l'agent et de 
 l'affichage, sporadiquement générer de la poussière ou un bijou (_GenerateDirtOrJewel()_)
 dans une des cases selon des probabilités que nous fixons.
@@ -58,10 +59,10 @@ baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'a
 
 == L'affichage
 
-NOTE: Les images de la grille étant affichées en temps que background, nous ne 
+NOTE: Les images de la grille étant affichées en tant que background, nous ne 
 pouvions qu'afficher une image à la fois par case, c'est ainsi que si l'agent 
-passe sur une case déjà occupé par de la poussière ou un bijoux, ces images vont 
-disparaitre (et réaparaitre lorsque l'agent change de case) sans obligatoirement
+passe sur une case déjà occupée par de la poussière ou un bijoux, ces images vont 
+disparaître (et réaparaître lorsque l'agent change de case) sans obligatoirement
 que l'agent les aient aspiré ou ramassé. +
 Pour être certain que lorsque l'agent passe sur une case contenant les deux 
 objets il ai bien ramassé les bijoux puis aspiré la poussière, il faut regarder
