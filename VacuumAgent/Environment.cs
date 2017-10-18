@@ -42,6 +42,11 @@ namespace VacuumAgent
             //Reward depends on the average length traveled from one random room to another.
             _goodActionReward = (int) (Math.Floor(Math.Sqrt(NbCaseX*NbCaseX + NbCaseY*NbCaseY)) / 2) + 1;
             _view.FormClosing += EndGame;
+
+            Random rnd = new Random();
+            GenerateDirt(rnd.Next(0, NbCaseX), rnd.Next(0, NbCaseY), true);
+            GenerateJewel(rnd.Next(0, NbCaseX), rnd.Next(0, NbCaseY), true);
+
         }
 
         public int GetPerf() { return _perf; }
@@ -106,7 +111,7 @@ namespace VacuumAgent
             }
         }
 
-        public void GenerateJewel(int x, int y)
+        public void GenerateJewel(int x, int y, bool firstUse = false)
         {
             if (!Rooms[x, y].HasJewel())
             {
@@ -115,11 +120,12 @@ namespace VacuumAgent
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"Jewel generated at {x},{y}");
                 Console.ResetColor();
-                _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
+                if(!firstUse)
+                    _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
             }
         }
 
-        public void GenerateDirt(int x, int y)
+        public void GenerateDirt(int x, int y, bool firstUse = false)
         {
             if (!Rooms[x, y].HasDirt())
             {
@@ -128,7 +134,8 @@ namespace VacuumAgent
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($"Dirt generated at {x},{y}");
                 Console.ResetColor();
-                _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
+                if(!firstUse)
+                    _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
             }
         }
 
