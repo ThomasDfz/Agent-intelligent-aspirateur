@@ -20,11 +20,37 @@ namespace VacuumAgent
 
             int x = 10;
             int y = 10;
+
+            try
+            {
+                x = int.Parse(args[0])>=1? int.Parse(args[0]) : x;
+                y = int.Parse(args[1])>=1? int.Parse(args[1]) : y;
+            }
+            catch (Exception excp)
+            {
+                Console.WriteLine("First 2 arguments : lenght X and Y of the grid"); 
+            }
+
             GraphicalView view = new GraphicalView(x, y);
             
             Environment environment = new Environment(view, x, y);
-            environment.SetJewelryAndDirtGenerationPercentages(17, 26);
-            environment.FactorSleep = 100; //Overall waiting between 2 actions.
+            int chanceJ = 17;
+            int chanceD = 26;
+            int factorSleep = 10;
+            try
+            {
+                chanceJ = (int.Parse(args[2]) >= 10 && int.Parse(args[2]) <= 100) ? int.Parse(args[2]) : chanceJ;
+                chanceD = (int.Parse(args[3]) >= 10 && int.Parse(args[3]) <= 100) ? int.Parse(args[3]) : chanceD;
+                factorSleep = int.Parse(args[4]) >= 10 ? int.Parse(args[4]) : factorSleep;
+            }
+            catch (Exception excp)
+            {
+                Console.WriteLine("3rd and 4rth arguments : chances of jewel and dirt to appear");
+                Console.WriteLine("last argument : factor sleep (the higher the slower)");
+            }
+
+            environment.SetJewelryAndDirtGenerationPercentages(chanceJ, chanceD);
+            environment.FactorSleep = factorSleep; //Overall waiting between 2 actions.
 
             Agent agent = new Agent(environment);
             
