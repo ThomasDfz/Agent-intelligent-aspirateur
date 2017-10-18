@@ -43,7 +43,7 @@ namespace VacuumAgent
             return false;
         }
 
-        public Stack<int> BuildShortestPath(Stack<Effectors> intentions, int root, int desire)
+        public Stack<int> BuildShortestPath(int root, int desire)
         {
             Stack<int> pathIds = new Stack<int>();
             pathIds.Push(desire);

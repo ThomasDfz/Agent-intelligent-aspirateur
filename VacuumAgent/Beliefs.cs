@@ -8,8 +8,9 @@ namespace VacuumAgent
         private Room[,] _believedRooms = new Room[10, 10];
         private List<Coordinates> _newDirtyRooms = new List<Coordinates>();
         private List<Coordinates> _newJewelyRooms = new List<Coordinates>();
+        private int _performanceMeasurement;
 
-        public Beliefs(int x = 10, int y = 10)
+        public Beliefs(int performanceMeasurement, int x = 10, int y = 10)
         {
             _believedRooms = new Room[x, y];
             for (int i = 0; i < x; i++)
@@ -19,6 +20,14 @@ namespace VacuumAgent
                     _believedRooms[i, j] = new Room();
                 }
             }
+            _performanceMeasurement = performanceMeasurement;
+        }
+
+        public int GetCurrentPerformance() { return _performanceMeasurement; }
+
+        public void SetCurrentPerformance(int currentPerf)
+        {
+            _performanceMeasurement = currentPerf;
         }
 
         public void AddNewDirtyRoom(int x, int y)

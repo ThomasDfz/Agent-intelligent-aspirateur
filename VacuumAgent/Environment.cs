@@ -17,6 +17,7 @@ namespace VacuumAgent
         private int _chanceJewel = 5;
 
         private int _perf = 1;
+        private int _electricityCost = 1;
         private int _goodActionReward;
         
         public Room[,] Rooms;
@@ -39,9 +40,11 @@ namespace VacuumAgent
             }
             
             //Reward depends on the average length traveled from one random room to another.
-            _goodActionReward = (int) Math.Floor(Math.Sqrt(NbCaseX*NbCaseX + NbCaseY*NbCaseY));
+            _goodActionReward = (int) (Math.Floor(Math.Sqrt(NbCaseX*NbCaseX + NbCaseY*NbCaseY)) / 2) + 1;
             _view.FormClosing += EndGame;
         }
+
+        public int GetPerf() { return _perf; }
 
         public void SetJewelryAndDirtGenerationPercentages(int chanceJewel, int chanceDirt)
         {
@@ -72,7 +75,7 @@ namespace VacuumAgent
         {
             _agentXPosition = x;
             _agentYPosition = y;
-            _perf--; //cost of any action
+            _perf -= _electricityCost; //cost of any action
             _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
         }
              

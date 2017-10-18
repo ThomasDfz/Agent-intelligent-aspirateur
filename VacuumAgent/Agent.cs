@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -9,23 +10,26 @@ namespace VacuumAgent
 {
     public class Agent
     {
-        private int _x, _y;
+        private int _x, _y; //Agent position
         private Environment _environment;
+        private int _sensorX, _sensorY, _sensorPerf;
+
+        private int _maxActionsBeforeNewObservation;
         
         /*BDI*/
         private Beliefs _beliefs;
         private Vertex _desire;
         private Stack<Effectors> _intentions = new Stack<Effectors>();
-        
-        private int _sensorX, _sensorY;
-        
+
+
         public Agent(Environment environment)
         {
             _environment = environment;
             _x = 0;
             _y = 0;
             _environment.ExecuteAgentAction(_x, _y);
-            _beliefs = new Beliefs(environment.NbCaseX, environment.NbCaseY);
+            _beliefs = new Beliefs(_environment.GetPerf(), environment.NbCaseX, environment.NbCaseY);
+            _maxActionsBeforeNewObservation = _environment.NbCaseX + _environment.NbCaseY + 2; 
         }
         
         public int GetX() { return _x; }
@@ -66,6 +70,21 @@ namespace VacuumAgent
         private void UpdateState() 
         {
             _beliefs.UpdateBelievedRooms();
+            
+            _sensorPerf = _environment.GetPerf();
+            if (_sensorPerf > _beliefs.GetCurrentPerformance() && _maxActionsBeforeNewObservation > 2)
+            {
+                _maxActionsBeforeNewObservation--;
+            }
+            else
+            {
+                _maxActionsBeforeNewObservation += 2;
+            }
+            _beliefs.SetCurrentPerformance(_sensorPerf);
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine("Max actions : " + _maxActionsBeforeNewObservation);
+            Console.ResetColor();
         }
         
         /*Pick a list of intended actions according to his beliefs and desires*/
@@ -104,9 +123,12 @@ namespace VacuumAgent
                         BreadthFirstSearch bfs = new BreadthFirstSearch(g);
                         if (bfs.ExploreAndSearch(localRoom.Id, _desire.Id))
                         {
-                            Stack<int> pathIds = bfs.BuildShortestPath(_intentions, localRoom.Id, _desire.Id);
+                            Stack<int> pathIds = bfs.BuildShortestPath(localRoom.Id, _desire.Id);
                             UpdateIntentions(pathIds, g);
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Black;
                             Console.WriteLine("Path found with BFS");
+                            Console.ResetColor();
                         }
                     }
                     else
@@ -114,9 +136,12 @@ namespace VacuumAgent
                         AstarSearch astar = new AstarSearch(g);
                         if (astar.ExploreAndSearch(localRoom.Id, _desire.Id))
                         {
-                            Stack<int> pathIds = astar.BuildShortestPath(_intentions, localRoom.Id, _desire.Id);
+                            Stack<int> pathIds = astar.BuildShortestPath(localRoom.Id, _desire.Id);
                             UpdateIntentions(pathIds, g);
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Black;
                             Console.WriteLine("Path found with A*");
+                            Console.ResetColor();
                         }
                     }    
                 }
@@ -126,8 +151,14 @@ namespace VacuumAgent
         //Realise agent intentions
         private void RealiseAction()
         {
+            int actionsDone = 0;
             while (_intentions.Count != 0)
             {
+                if (actionsDone == _maxActionsBeforeNewObservation)
+                {
+                    _intentions.Clear();
+                    break;
+                }
                 switch (_intentions.Pop())
                 {
                     case Effectors.MoveDown:
@@ -174,6 +205,7 @@ namespace VacuumAgent
                         }
                         break;
                 }
+                actionsDone++;
                 _environment.ExecuteAgentAction(_x, _y);
                 Thread.Sleep(_environment.FactorSleep);
             }
