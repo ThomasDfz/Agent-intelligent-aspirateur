@@ -57,6 +57,11 @@ baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'a
 
 == L'agent basé sur les buts
 
+=== Modélisation des caractéristiques de l'agent
+
+Ici les capteurs ont été modélisés par de simples entiers permettant d'itérer à
+travers les salles de l'environnement afin d'en extraire les données.
+
 == L'affichage
 
 NOTE: Les images de la grille étant affichées en tant que background, nous ne 
