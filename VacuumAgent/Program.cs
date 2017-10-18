@@ -18,7 +18,7 @@ namespace VacuumAgent
             Application.SetCompatibleTextRenderingDefault(false);          
             Thread agentThread, environmentThread;
 
-            int x = 10;
+            int x = 5;
             int y = 10;
 
             try
@@ -112,7 +112,7 @@ namespace VacuumAgent
         {
             for (int i = 0; i < rooms.GetLength(0); i++)
             {
-                for (int j = 0; j < rooms.GetLength(0); j++)
+                for (int j = 0; j < rooms.GetLength(1); j++)
                 {
                     if (rooms[i, j].HasDirt() && rooms[i, j].HasJewel())
                         _roomPanels[i, j].BackgroundImage = dirtJewelImage;
