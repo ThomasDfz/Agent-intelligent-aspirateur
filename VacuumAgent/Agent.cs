@@ -39,7 +39,7 @@ namespace VacuumAgent
         {
             while (true)
             {
-                Thread.Sleep(20 * _environment.FactorSleep);
+                Thread.Sleep(18 * _environment.FactorSleep);
                 ObserveEnvironment();
                 UpdateState();
                 PickAction();
