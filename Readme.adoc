@@ -9,7 +9,7 @@ Ce TP est réalisé dans le cadre du cours d'IA de l'UQAC.
 Il a pour but de modéliser un agent simple ayant pour but d'aspirer la 
 poussière et ramasser les bijoux tombés sur le sol, le tout avec une efficacité 
 maximale. +
-Pour présenter ce TP, nous étudierons trois aspects :
+Pour présenter ce TP que nous avons réalisé en C\#, nous étudierons trois aspects :
 [circle]
 * L'environement
 * L'agent
@@ -59,8 +59,37 @@ baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'a
 
 === Modélisation des caractéristiques de l'agent
 
+==== Capteurs/Effecteurs
+
 Ici les capteurs ont été modélisés par de simples entiers permettant d'itérer à
-travers les salles de l'environnement afin d'en extraire les données.
+travers les salles de l'environnement afin d'en extraire les données ou permettant
+de récupérer la mesure de performane.
+
+Ses effecteurs ont été implémentés sous forme d'énumération (_Effectors.cs_).
+Ils sont au nombre de 6 : MoveUp, MoveDown, MoveLeft, MoveRight, Vacuum, PickUpJewel.
+Nous avons en effet considéré chacun des 4 mouvements comme induits par un effecteur différent.
+
+==== Belief/Desire/Intention
+
+Conformément au cours, nous avons implémenté pour notre agent un modèle
+beliefs/desire/intention. Nous nous sommes penchés sur l'implémentation la plus logique
+et les avons définit comme suit :
+
+[circle]
+* Les croyances (attribut privé _\_beliefs_ de la classe Agent) sont une classe à part
+entière (_Beliefs.cs_). Elle contient une réplique du manoir, implémentée de la même
+façon, c'est à dire un tableau de _Room_ nommé _\_believedRooms_ et modifié lorsque l'agent
+met à jour son état interne.
+* Les désirs sont ici modélisés par un _Vertex_ (classe implémentée dans _Graph.cs_ représentant
+un noeud). En effet, lorsque l'agent a repéré l'objet le plus proche, son désire est de
+se rendre dans la pièce correspondante pour intéragir avec.
+* Les intentions ont été implémentées sur la forme d'une pile d'_Effectors_. Le résultat 
+des algorithmes de plus court chemin ainsi que les croyances sur la pièce désirée 
+vont permettre de remplir cette pile d'intentions qu'il suffira ensuite de dépiler.
+
+==== Cycle de vie
+
+=== Recherche du plus court chemin
 
 == L'affichage
 
