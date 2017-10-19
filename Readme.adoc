@@ -97,7 +97,10 @@ que le programme tourne).
 Les 4 fonctions sont les suivantes et sont retrouvables dans _AsyncWork()_, fonction de l'agent.
 
 [circle]
-* _ObserveEnvironment()_ : L'agent va utiliser ses capteurs pour mettre à jour ses
+* [source,c#]
+_ObserveEnvironment()_ :
+
+L'agent va utiliser ses capteurs pour mettre à jour ses
 croyances vis à vis des pièces occupées par une poussière et/ou un bijou en les listant.
 * _UpdateState()_ : L'agent va mettre à jour son état interne, à savoir d'une part 
 ses croyances sur le manoir entier grâce aux listes de pièces occupées par un objet qu'il
