@@ -55,6 +55,8 @@ namespace VacuumAgent
             Agent agent = new Agent(environment);
 
             /*Starting environment and agent in separate threads*/
+            /*Agent starts at (0, 0)*/
+            /*Environment starts with a dirt and a jewel randomly generated*/
             environmentThread = new Thread(environment.AsyncTask);
             agentThread = new Thread(agent.AsyncWork);
             environmentThread.Start();

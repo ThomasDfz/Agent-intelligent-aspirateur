@@ -18,7 +18,7 @@
             switch(eff)
             {
                 case Effectors.Vacuum :
-                    return 20;
+                    return 25;
                 case Effectors.PickUpJewel:
                     return 10;
                 default:
