@@ -76,9 +76,9 @@ beliefs/desire/intention. Nous nous sommes penchés sur l'implémentation la plu
 et les avons définit comme suit :
 
 [circle]
-* Les croyances (attribut privé _\_beliefs_ de la classe Agent) sont une classe à part
+* Les croyances (attribut privé_ _beliefs_ de la classe Agent) sont une classe à part
 entière (_Beliefs.cs_). Elle contient une réplique du manoir, implémentée de la même
-façon, c'est à dire un tableau de _Room_ nommé _\_believedRooms_ et modifié lorsque l'agent
+façon, c'est à dire un tableau de _Room_ nommé_ _believedRooms_ et modifié lorsque l'agent
 met à jour son état interne.
 * Les désirs sont ici modélisés par un _Vertex_ (classe implémentée dans _Graph.cs_ représentant
 un noeud). En effet, lorsque l'agent a repéré l'objet le plus proche, son désire est de
