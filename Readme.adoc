@@ -109,6 +109,7 @@ vont permettre de remplir cette pile d'intentions qu'il suffira ensuite de dépi
 ==== Cycle de vie
 
 Le cycle de vie de notre agent est conforme au cycle de vie d'un agent basé sur les buts.
+Il s'éxecute sur un thread différent de l'environnement et de la vue graphique.
 Il consiste en 4 fonctions bien distinctes ayant chacune un but précis, qui se lancent 
 tant que l'agent est en vie (dans notre projet, l'agent n'est jamais censé mourir tant
 que le programme tourne).
@@ -187,6 +188,12 @@ Quant à sa mesure de performance, elle fluctue au début mais tend vers + l'inf
 avec un bonus plutôt faible, cela étant sans doute dû aux probabilités d'apparition des objets.
 
 == L'affichage
+
+L'affichage est implémenté via la classe _GraphicalView_ héritant de la classe
+_System.Windows.Form_ et s'éxécute sur le thread principal. 
+A sa création, on crée une première fois les panels représentant les
+pièces, puis à chaque rafraîchissement on met à jour la propriété _BackgroundImage_ des panels
+afin d'afficher l'image correpondante.
 
 NOTE: Les images de la grille étant affichées en tant que background, nous ne 
 pouvions qu'afficher une image à la fois par case, c'est ainsi que si l'agent 
