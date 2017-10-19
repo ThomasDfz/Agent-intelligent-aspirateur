@@ -9,6 +9,8 @@
         Vacuum,
         PickUpJewel
     }
+    
+    /*Agent's effectors have different durations.*/
     public static class EffectorDuration
     {
         public static int GetEffectorDuration(Effectors eff)

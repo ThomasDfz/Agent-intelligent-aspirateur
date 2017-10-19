@@ -12,7 +12,7 @@ namespace VacuumAgent
         public int NbCaseX { get; }
         public int NbCaseY { get; }
 
-        public int FactorSleep { get; set; } = 100;
+        public int FactorSleep { get; set; } = 100; //Overall waiting between 2 actions.
         private int _chanceDirt = 10;
         private int _chanceJewel = 5;
 
@@ -43,6 +43,7 @@ namespace VacuumAgent
             _goodActionReward = (int) (Math.Floor(Math.Sqrt(NbCaseX*NbCaseX + NbCaseY*NbCaseY)) / 2) + 1;
             _view.FormClosing += EndGame;
 
+            /*Already starting with a dirt and a jewel*/
             Random rnd = new Random();
             GenerateDirt(rnd.Next(0, NbCaseX), rnd.Next(0, NbCaseY), true);
             GenerateJewel(rnd.Next(0, NbCaseX), rnd.Next(0, NbCaseY), true);
@@ -61,6 +62,7 @@ namespace VacuumAgent
             }
         }
 
+        /*End program when graphical view is closed*/
         private static void EndGame(object sender, FormClosingEventArgs e)
         {
             System.Environment.Exit(1);
@@ -83,6 +85,10 @@ namespace VacuumAgent
             _view.Refresh(Rooms, _agentXPosition, _agentYPosition);
         }
              
+        /*Generates a dirt, a jewel or nothing based on given percentages
+          We're not looking for another room if we want to generate dirt in an already
+          dirty one, it will just be 'dirtier' but still cleanable in one vacuum since its a boolean.
+          Same for jewels.*/
         public void GenerateDirtOrJewel()
         {
             Random rnd = new Random();
@@ -153,7 +159,7 @@ namespace VacuumAgent
             if (Rooms[x, y].HasJewel())
             {
                 _perf -= 5 * _goodActionReward; //what a mistake !
-                Console.WriteLine("JEWEL VACUUMED !");
+                Console.WriteLine("JEWEL VACUUMED !!!!");
             }
             if (Rooms[x, y].HasDirt()) _perf += _goodActionReward;
             Rooms[x, y].Vacuum(); 
@@ -173,24 +179,17 @@ namespace VacuumAgent
             _hasDirt = _hasJewel = false;
         }
 
+        public bool HasDirt() { return _hasDirt; }
+        public bool HasJewel() { return _hasJewel; }
+
         public void DirtGenerated()
         {
             _hasDirt = true;
         }
-        
+
         public void JewelGenerated()
         {
             _hasJewel = true;
-        }
-
-        public bool HasDirt()
-        {
-            return _hasDirt;
-        }
-
-        public bool HasJewel()
-        {
-            return _hasJewel;
         }
 
         public void RemoveJewel()

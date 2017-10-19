@@ -28,7 +28,7 @@ namespace VacuumAgent
             }
             catch (Exception excp)
             {
-                Console.WriteLine("First 2 arguments : lenght X and Y of the grid"); 
+                Console.WriteLine("First 2 arguments : lenght X and Y of the grid, 10 by default"); 
             }
 
             GraphicalView view = new GraphicalView(x, y);
@@ -39,21 +39,22 @@ namespace VacuumAgent
             int factorSleep = 100;
             try
             {
-                chanceJ = (int.Parse(args[2]) >= 10 && int.Parse(args[2]) <= 100) ? int.Parse(args[2]) : chanceJ;
-                chanceD = (int.Parse(args[3]) >= 10 && int.Parse(args[3]) <= 100) ? int.Parse(args[3]) : chanceD;
+                chanceJ = (int.Parse(args[2]) >= 5 && int.Parse(args[2]) <= 100) ? int.Parse(args[2]) : chanceJ;
+                chanceD = (int.Parse(args[3]) >= 5 && int.Parse(args[3]) <= 100) ? int.Parse(args[3]) : chanceD;
                 factorSleep = int.Parse(args[4]) >= 20 ? int.Parse(args[4]) : factorSleep;
             }
             catch (Exception excp)
             {
-                Console.WriteLine("3rd and 4rth arguments : chances of jewel and dirt to appear");
-                Console.WriteLine("last argument : factor sleep (the higher the slower)");
+                Console.WriteLine("3rd and 4rth arguments : chances of jewel and dirt to appear (in %, 6 & 12 by default)");
+                Console.WriteLine("last argument : factor sleep (the higher the slower, 100 by default)");
             }
 
             environment.SetJewelryAndDirtGenerationPercentages(chanceJ, chanceD);
-            environment.FactorSleep = factorSleep; //Overall waiting between 2 actions.
+            environment.FactorSleep = factorSleep;
 
             Agent agent = new Agent(environment);
 
+            /*Starting environment and agent in separate threads*/
             environmentThread = new Thread(environment.AsyncTask);
             agentThread = new Thread(agent.AsyncWork);
             environmentThread.Start();
@@ -77,6 +78,7 @@ namespace VacuumAgent
             Print(x, y);
         }
 
+        /*Called once, prints the empty manor*/
         public void Print(int x = 10, int y = 10)
         {      
             const int tileSize = 40;
@@ -108,6 +110,7 @@ namespace VacuumAgent
             }
         }
 
+        /*Called at every action, updates each room BackgroundImages property according to its content*/
         public void Refresh(Room[,] rooms, int agentXPosition, int agentYPosition)
         {
             for (int i = 0; i < rooms.GetLength(0); i++)

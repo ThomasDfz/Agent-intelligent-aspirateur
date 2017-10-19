@@ -29,6 +29,7 @@ namespace VacuumAgent
             _g = g;
         }
         
+        /*Go through the graph, stops if desired vertex is found*/
         public bool ExploreAndSearch(int root, int desire)
         {
             _openSet.Add(root);
@@ -88,6 +89,7 @@ namespace VacuumAgent
             return pathIds;
         }
         
+        /*Heuristic is based on the mathematical distance between room coordinates*/
         public double HeuristicCostEstimation(int start, int end)
         {
             int x1 = _g.FindVertexById(start).GetX();

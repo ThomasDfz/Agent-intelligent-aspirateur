@@ -25,16 +25,24 @@ namespace VacuumAgent
         public Agent(Environment environment)
         {
             _environment = environment;
+            
+            /*Initial state*/
             _x = 0;
             _y = 0;
+            
+            /*Giving environment information about first agent position, also to refresh the graphical view*/
             _environment.ExecuteAgentAction(_x, _y);
+
+            /*Number (maximum) of actions if both items appear in the opposite side of the manor*/
+            _maxActionsBeforeNewObservation = _environment.NbCaseX + _environment.NbCaseY + 2;
+            
             _beliefs = new Beliefs(_environment.GetPerf(), environment.NbCaseX, environment.NbCaseY);
-            _maxActionsBeforeNewObservation = _environment.NbCaseX + _environment.NbCaseY + 2; 
         }
         
         public int GetX() { return _x; }
         public int GetY() { return _y; }
 
+        /*LifeCycle of our goal-based agent*/
         public void AsyncWork()
         {
             while (true)
@@ -65,7 +73,8 @@ namespace VacuumAgent
             }
         }
         
-        /*Update agent's beliefs about how the whole manor actually is*/
+        /*Update agent's beliefs about how the whole manor actually is
+          and update his observing frequency based on his performance measurement*/
         private void UpdateState() 
         {
             _beliefs.UpdateBelievedRooms();
@@ -92,11 +101,12 @@ namespace VacuumAgent
             Coordinates nearestItemPosition = GetNearestBelievedItem();
             if (nearestItemPosition.x != -1 && nearestItemPosition.y != -1)
             {
+                /*Push the last intentions in the stack first so*/
                 switch (_beliefs.GetBelievedRoomContent(nearestItemPosition.x, nearestItemPosition.y))
                 {
                     case "dirt and jewel":
                         _intentions.Push(Effectors.Vacuum);
-                        _intentions.Push(Effectors.PickUpJewel);
+                        _intentions.Push(Effectors.PickUpJewel); /*Priority*/
                         break;
                     case "jewel":
                         _intentions.Push(Effectors.PickUpJewel);
@@ -112,11 +122,11 @@ namespace VacuumAgent
                 else
                 {
                     Graph g = BuildGraphAccordingToEnvironment();
-                    
-                    //Randomly choose between the informed and uninformed algorithm.
-                    Random randomlyChosenSearchAlgorithm = new Random();
                     Vertex localRoom = g.FindVertexByCoordinates(_x, _y);
                     _desire = g.FindVertexByCoordinates(nearestItemPosition.x, nearestItemPosition.y);
+
+                    //Randomly choose between the informed and uninformed algorithm.
+                    Random randomlyChosenSearchAlgorithm = new Random();
                     if (randomlyChosenSearchAlgorithm.Next(0, 2) == 0)
                     {
                         BreadthFirstSearch bfs = new BreadthFirstSearch(g);
@@ -147,7 +157,7 @@ namespace VacuumAgent
             }
         }
         
-        //Realise agent intentions
+        //Realise agent intentions by destacking the actions
         private void RealiseAction()
         {
             int actionsDone = 0;
@@ -155,6 +165,7 @@ namespace VacuumAgent
             {
                 if (actionsDone == _maxActionsBeforeNewObservation)
                 {
+                    /*Stop current path to observe environment again*/
                     _intentions.Clear();
                     break;
                 }
@@ -181,6 +192,8 @@ namespace VacuumAgent
                             Console.ForegroundColor = ConsoleColor.Black;
                             Console.WriteLine("~~~ Picking up Jewel at " + _x + "," + _y + " ~~~");
                             Console.ResetColor();
+                            
+                            /*Informing environment and updating beliefs*/
                             _environment.JewelPickedUp(_x, _y);
                             _beliefs.JewelSupposedlyPickedUp(_x, _y);
                         }
@@ -196,6 +209,8 @@ namespace VacuumAgent
                             Console.ForegroundColor = ConsoleColor.Black;
                             Console.WriteLine("~~~ Vacuuming dirt at " + _x + "," + _y + " ~~~");
                             Console.ResetColor();
+                            
+                            /*Informing environment and updating beliefs*/
                             _environment.DirtVaccumed(_x, _y);
                             _beliefs.DirtSupposedlyVaccumed(_x, _y);
                         }
@@ -268,7 +283,7 @@ namespace VacuumAgent
             }
         }
 
-        //Building a rectangular directed graph.
+        //Building a directed graph to be used by search algorithms.
         public Graph BuildGraphAccordingToEnvironment()
         {
             Graph g = new Graph(_environment.NbCaseX, _environment.NbCaseY);
@@ -277,6 +292,7 @@ namespace VacuumAgent
             {
                 for (var j = 0; j < _environment.NbCaseY; j++)
                 {
+                    /*Each vertext represents a room*/
                     Vertex v = new Vertex(i, j, ids);
                     g.AddVertex(v);
                     ids++;

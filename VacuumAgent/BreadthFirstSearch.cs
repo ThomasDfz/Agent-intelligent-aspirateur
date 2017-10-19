@@ -14,6 +14,7 @@ namespace VacuumAgent
             _predecessors = new int[g.GetVerticesNb()];
         }
         
+        /*Go through the graph, stops if desired vertex is found*/
         public bool ExploreAndSearch(int root, int desire)
         {
             bool[] visited = new bool[_g.GetVerticesNb()];
