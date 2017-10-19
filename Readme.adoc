@@ -80,10 +80,10 @@ et les avons définit comme suit :
 entière (_Beliefs.cs_). Elle contient une réplique du manoir, implémentée de la même
 façon, c'est à dire un tableau de _Room_ nommé_ _believedRooms_ et modifié lorsque l'agent
 met à jour son état interne.
-* Les désirs sont ici modélisés par un _Vertex_ (classe implémentée dans _Graph.cs_ représentant
+* Les désirs (attribut privé_ _desire_ de la classe Agent) sont ici modélisés par un _Vertex_ (classe implémentée dans _Graph.cs_ représentant
 un noeud). En effet, lorsque l'agent a repéré l'objet le plus proche, son désire est de
 se rendre dans la pièce correspondante pour intéragir avec.
-* Les intentions ont été implémentées sur la forme d'une pile d'_Effectors_. Le résultat 
+* Les intentions (attribut privé_ _intentions_ de la classe Agent) ont été implémentées sur la forme d'une pile d'_Effectors_. Le résultat 
 des algorithmes de plus court chemin ainsi que les croyances sur la pièce désirée 
 vont permettre de remplir cette pile d'intentions qu'il suffira ensuite de dépiler.
 
