@@ -88,7 +88,7 @@ baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'a
 
 Ici les capteurs ont été modélisés par de simples entiers permettant d'itérer à
 travers les salles de l'environnement afin d'en extraire les données ou permettant
-de récupérer la mesure de performane.
+de récupérer la mesure de performance.
 
 Ses effecteurs ont été implémentés sous forme d'énumération (_Effectors.cs_).
 Ils sont au nombre de 6 : MoveUp, MoveDown, MoveLeft, MoveRight, Vacuum, PickUpJewel.
