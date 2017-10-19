@@ -64,9 +64,11 @@ un seul coup d'aspirateur en viendra à bout. De même pour les bijoux.
 L'environnement va être informé des actions de l'agent et pourra ainsi mettre à 
 jour le contenu de ses pièces ainsi qu'informer la vue de se rafraîchir. (_ExecuteAgentAction()_)
 
-L'environnement détient aussi la mesure de performance de l'agent. Elle est liée
+L'environnement détient aussi la mesure de performance de l'agent
+_ _perf_. Elle est liée
 à l'électricité utilisée par l'agent (-1 par action : mouvement, ramasser un bijou, 
-aspirer) et un certain nombre de points est ajouté à cette mesure de performance 
+aspirer) et un certain nombre de points
+_ _goodActionReward_ est ajouté à cette mesure de performance 
 basé sur la taille de l'environnement (pour pouvoir être équitable si 
 l'environnement est grand). Si l'agent aspire un bijou, la mesure de performance 
 baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'agent.
