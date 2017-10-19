@@ -97,10 +97,7 @@ que le programme tourne).
 Les 4 fonctions sont les suivantes et sont retrouvables dans _AsyncWork()_, fonction de l'agent.
 
 [circle]
-* [source,c#]
-_ObserveEnvironment()_ :
-
-L'agent va utiliser ses capteurs pour mettre à jour ses
+* _ObserveEnvironment()_ : L'agent va utiliser ses capteurs pour mettre à jour ses
 croyances vis à vis des pièces occupées par une poussière et/ou un bijou en les listant.
 * _UpdateState()_ : L'agent va mettre à jour son état interne, à savoir d'une part 
 ses croyances sur le manoir entier grâce aux listes de pièces occupées par un objet qu'il
@@ -145,11 +142,17 @@ fois qu'il souhaite se déplacer. Pour plus de lisibilité, les deux classes _As
 et _BreadthFirstSearch_ ont été implémentées selon l'interface _IShortestPathAlgorithm_ 
 définissant la signature des deux fonctions principales.
 
-_bool ExploreAndSearch(int root, int desire)_ prend en paramètre l'Id du vertex 
+[source,java]
+bool ExploreAndSearch(int root, int desire)
+
+prend en paramètre l'Id du vertex 
 correspondant à la position de l'agent, et celui du vertex de son_ _desire_ et parcourt
 en largeur le graphe. S'arrête et renvoie _true_ si on le trouve, _false_ sinon.
 
-_Stack<int> BuildShortestPath(int root, int desire)_ est appelé si l'on a trouvé 
+[source,java]
+Stack<int> BuildShortestPath(int root, int desire)
+
+est appelé si l'on a trouvé 
 le _Vertex__ _desire_ est permet grâce aux informations récupérées à l'appel de la 
 fonction précédente de retracer le chemin le plus court permettant ensuite à l'agent
 de mettre à jour ses intentions.
