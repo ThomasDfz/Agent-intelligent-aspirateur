@@ -143,19 +143,16 @@ et _BreadthFirstSearch_ ont été implémentées selon l'interface _IShortestPat
 définissant la signature des deux fonctions principales.
 
 [source,java]
+/*prend en paramètre l'Id du vertex correspondant à la position de l'agent, et celui du vertex de son desir et parcourt
+en largeur le graphe. S'arrête et renvoie _true_ si on le trouve, _false_ sinon.*/
 bool ExploreAndSearch(int root, int desire)
 
-prend en paramètre l'Id du vertex 
-correspondant à la position de l'agent, et celui du vertex de son_ _desire_ et parcourt
-en largeur le graphe. S'arrête et renvoie _true_ si on le trouve, _false_ sinon.
-
 [source,java]
-Stack<int> BuildShortestPath(int root, int desire)
-
-est appelé si l'on a trouvé 
+/*est appelé si l'on a trouvé 
 le _Vertex__ _desire_ est permet grâce aux informations récupérées à l'appel de la 
 fonction précédente de retracer le chemin le plus court permettant ensuite à l'agent
-de mettre à jour ses intentions.
+de mettre à jour ses intentions.*/
+Stack<int> BuildShortestPath(int root, int desire)
 
 L'heuristique utilisé pour A* est la simple distance mathématique entre deux pièces,
 en considèrant les pièces comme des points situés sur leurs coordonnées : _HeuristicCostEstimation()_
