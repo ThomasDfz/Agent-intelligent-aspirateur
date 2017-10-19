@@ -46,7 +46,6 @@ namespace VacuumAgent
             Random rnd = new Random();
             GenerateDirt(rnd.Next(0, NbCaseX), rnd.Next(0, NbCaseY), true);
             GenerateJewel(rnd.Next(0, NbCaseX), rnd.Next(0, NbCaseY), true);
-
         }
 
         public int GetPerf() { return _perf; }
@@ -71,8 +70,8 @@ namespace VacuumAgent
         { 
             while (true)
             {
-                Thread.Sleep(5 * FactorSleep);
                 GenerateDirtOrJewel();
+                Thread.Sleep(5 * FactorSleep);
             }
         }
 
@@ -151,9 +150,13 @@ namespace VacuumAgent
 
         public void DirtVaccumed(int x, int y)
         {
-            if (Rooms[x, y].HasJewel())  _perf -= 50; //what a mistake !
+            if (Rooms[x, y].HasJewel())
+            {
+                _perf -= 5 * _goodActionReward; //what a mistake !
+                Console.WriteLine("JEWEL VACUUMED !");
+            }
             if (Rooms[x, y].HasDirt()) _perf += _goodActionReward;
-            Rooms[x, y].Vacuum();
+            Rooms[x, y].Vacuum(); 
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("PERF : " + _perf);

@@ -9,18 +9,18 @@
         Vacuum,
         PickUpJewel
     }
-    static public class EffectorDuration
+    public static class EffectorDuration
     {
-        static public int getEffectorDuration(Effectors eff)
+        public static int GetEffectorDuration(Effectors eff)
         {
             switch(eff)
             {
                 case Effectors.Vacuum :
-                    return 25;
+                    return 20;
                 case Effectors.PickUpJewel:
                     return 10;
                 default:
-                    return 5;
+                    return 2;
             }
         }
     }

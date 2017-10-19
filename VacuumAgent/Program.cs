@@ -18,7 +18,7 @@ namespace VacuumAgent
             Application.SetCompatibleTextRenderingDefault(false);          
             Thread agentThread, environmentThread;
 
-            int x = 5;
+            int x = 10;
             int y = 10;
 
             try
@@ -34,9 +34,9 @@ namespace VacuumAgent
             GraphicalView view = new GraphicalView(x, y);
             
             Environment environment = new Environment(view, x, y);
-            int chanceJ = 17;
-            int chanceD = 26;
-            int factorSleep = 20;
+            int chanceJ = 6;
+            int chanceD = 12;
+            int factorSleep = 100;
             try
             {
                 chanceJ = (int.Parse(args[2]) >= 10 && int.Parse(args[2]) <= 100) ? int.Parse(args[2]) : chanceJ;
@@ -53,12 +53,12 @@ namespace VacuumAgent
             environment.FactorSleep = factorSleep; //Overall waiting between 2 actions.
 
             Agent agent = new Agent(environment);
-            
-            agentThread = new Thread(agent.AsyncWork);
+
             environmentThread = new Thread(environment.AsyncTask);
-            agentThread.Start();
+            agentThread = new Thread(agent.AsyncWork);
             environmentThread.Start();
-            
+            agentThread.Start();
+
             Application.Run(view);
         }
     }

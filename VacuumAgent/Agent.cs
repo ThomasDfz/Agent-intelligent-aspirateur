@@ -75,7 +75,7 @@ namespace VacuumAgent
             {
                 _maxActionsBeforeNewObservation--;
             }
-            else
+            else if(_maxActionsBeforeNewObservation < _environment.NbCaseX + _environment.NbCaseY + 2)
             {
                 _maxActionsBeforeNewObservation += 2;
             }
@@ -207,9 +207,10 @@ namespace VacuumAgent
                 }
                 actionsDone++;
                 _environment.ExecuteAgentAction(_x, _y);
-                int duration = EffectorDuration.getEffectorDuration(intention);
+                int duration = EffectorDuration.GetEffectorDuration(intention);
                 Thread.Sleep(duration * _environment.FactorSleep);
             }
+            Thread.Sleep(_environment.FactorSleep);
         }
 
         //Based on current beliefs, get the coordinates of the nearest jewel or dirt
