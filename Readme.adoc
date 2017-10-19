@@ -15,6 +15,7 @@ Pour présenter ce TP que nous avons réalisé en C#, nous étudierons trois asp
 * L'agent
 * L'affichage
 
+
 == L'environnement
 
 === Caractéristiques
@@ -30,6 +31,21 @@ pièces du manoir.
 est en pleine délibération
 * Discret car il existe un nombre fini d'états.
 * Enfin c'est un environnement ne disposant que d'un agent.
+
+=== Définition du problème
+
+Le problème est ici défini par :
+
+[circle]
+* État initial : l'agent commence en position (0, 0).
+* Opérateurs : l'agent possède 6 actions possibles : Ramasser un bijou, Aspirer, 
+ainsi que se déplacer dans les 4 directions.
+* La fonction de succession dépend de l'état actuel et comporte les 6 couples <actions, état suivant>.
+Si l'agent en (x, y) se déplace en bas, il sera à l'état suivant en (x, y-1) s'il n'est pas sur le bord inférieur,
+s'il aspire alors si se trouvera sur la même case mais vide, etc...
+* Le coût du chemin est toujours de 1.
+* Le test de but est ici implicite, on veut toujours que la case la plus proche
+soit exempte de toute poussière ou bijou.
 
 === Notre implémentation
 
@@ -144,15 +160,29 @@ définissant la signature des deux fonctions principales.
 
 [circle]
 * _bool ExploreAndSearch(int root, int desire)_ prend en paramètre l'Id du vertex
-correspondant à la position de l'agent, et celui du vertex de son desir et parcourt
-en largeur le graphe. S'arrête et renvoie _true_ si on le trouve, _false_ sinon.
+correspondant à la position de l'agent, et celui du vertex de son desir et parcourt 
+le graphe. S'arrête et renvoie _true_ si on le trouve, _false_ sinon.
 * _Stack<int> BuildShortestPath(int root, int desire_) est appelé si l'on a trouvé 
-le _Vertex__ _desire_ est permet grâce aux informations récupérées à l'appel de la 
+le _Vertex__ _desire_ et permet grâce aux informations récupérées à l'appel de la 
 fonction précédente de retracer le chemin le plus court permettant ensuite à l'agent
 de mettre à jour ses intentions.
 
 L'heuristique utilisé pour A* est la simple distance mathématique entre deux pièces,
 en considèrant les pièces comme des points situés sur leurs coordonnées : _HeuristicCostEstimation()_
+
+=== Comportement observé de l'agent
+
+Avec les paramètres de base concernant la fréquence globale du programme ainsi que les
+probabilités d'apparition des objets, l'agent commence par rester pendant quelques épisodes
+au nombre d'actions maximum. En effet s'il doit se déplacer trop loin pour aspirer 
+ou ramasser, il dépense plus d'électricité que sa mesure de performance ne remonte.
+Mais dès que l'environnement fait apparaître plus d'objets, il a moins à se déplacer 
+aussi sa mesure de performance monte et son nombre d'actions par tour baisse.
+Il peut ainsi observer plus souvent son environnement, ce qui est très bénéfique lorsqu'un
+objet apparaît près de lui alors qu'il est en déplacement. On constate après un certain
+temps (une, deux minutes) que le nombre d'actions moyen tend à se stabiliser entre 3 et 7.
+Quant à sa mesure de performance, elle fluctue au début mais tend vers + l'infini, même
+avec un bonus plutôt faible, cela étant sans doute dû aux probabilités d'apparition des objets.
 
 == L'affichage
 
