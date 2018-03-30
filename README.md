@@ -1,0 +1,213 @@
+= TP IA 1
+
+:toc:
+:authors: Thomas Defossez  Edouard François 
+
+== Introduction
+
+Ce TP est réalisé dans le cadre du cours d'IA de l'UQAC.
+Il a pour but de modéliser un agent simple ayant pour but d'aspirer la 
+poussière et ramasser les bijoux tombés sur le sol, le tout avec une efficacité 
+maximale. +
+
+Pour éxécuter notre programme, il suffit de lancer l'éxécutable se trouvant 
+dans _VaccumAgent/bin/Debug_ afin qu'il puisse retrouver les images situées
+dans _Assets_. Les événements principaux sont écrits dans la console, en vert pour l'agent,
+bleu pour l'environnement et la mesure de performance est affichée en rouge.
+
+Pour présenter ce TP que nous avons réalisé en C#, nous étudierons trois aspects :
+[circle]
+* <<env_anchor>>
+* <<agent_anchor>>
+* <<aff_anchor>>
+
+[[env_anchor]]
+== L'environnement
+
+=== Caractéristiques
+
+L'environnement possède les propriétés suivantes :
+
+[circle]
+* Complétement observable, car les capteurs de l'agent peuvent voir toutes les 
+pièces du manoir.
+* Stochastique, car l'aléatoire joue un rôle dans l'apparition des objets.
+* Séquentiel car un épisode dépend du précédent notamment dans la position de l'agent
+* Dynamique, en effet une poussière ou un bijou peut apparaître alors que l'agent
+est en pleine délibération
+* Discret car il existe un nombre fini d'états.
+* Enfin c'est un environnement ne disposant que d'un agent.
+
+=== Définition du problème
+
+Le problème est ici défini par :
+
+[circle]
+* État initial : l'agent commence en position (0, 0).
+* Opérateurs : l'agent possède 6 actions possibles : Ramasser un bijou, Aspirer, 
+ainsi que se déplacer dans les 4 directions.
+* La fonction de succession dépend de l'état actuel et comporte les 6 couples <actions, état suivant>.
+Si l'agent en (x, y) se déplace en bas, il sera à l'état suivant en (x, y-1) s'il n'est pas sur le bord inférieur,
+s'il aspire alors si se trouvera sur la même case mais vide, etc...
+* Le coût du chemin est toujours de 1.
+* Le test de but est ici implicite, on veut toujours que la case la plus proche
+soit exempte de toute poussière ou bijou.
+
+=== Notre implémentation
+
+L'environnement est constitué d'un damier rectangulaire, de dimentions x et y 
+pouvant être changés. Il consiste en un tableau à 2 dimensions de _Room_, 
+classe créée pour représenter chaque pièce, pouvant contenir de la poussière,
+un bijou, les deux ou aucun des deux.
+
+L'environnement va, dans un fil d'éxécution différent de l'agent et de 
+l'affichage, sporadiquement générer de la poussière ou un bijou (_GenerateDirtOrJewel()_)
+dans une des cases selon des probabilités que nous fixons.
+Si une poussière doit être générée dans une pièce en contenant déjà, on ne 
+cherche pas à trouver une nouvelle pièce propre, en effet la présence de poussière 
+étant modélisée par un booléen, la pièce est simplement plus sale qu'avant mais 
+un seul coup d'aspirateur en viendra à bout. De même pour les bijoux.
+L'environnement va être informé des actions de l'agent et pourra ainsi mettre à 
+jour le contenu de ses pièces ainsi qu'informer la vue de se rafraîchir. (_ExecuteAgentAction()_)
+
+L'environnement détient aussi la mesure de performance de l'agent
+_ _perf_. Elle est liée
+à l'électricité utilisée par l'agent (-1 par action : mouvement, ramasser un bijou, 
+aspirer) et un certain nombre de points
+_ _goodActionReward_ est ajouté à cette mesure de performance 
+basé sur la taille de l'environnement (pour pouvoir être équitable si 
+l'environnement est grand). Si l'agent aspire un bijou, la mesure de performance 
+baisse de 5 fois ce nombre de points. Elle est consultable en tout temps par l'agent.
+
+[[agent_anchor]]
+== L'agent basé sur les buts
+
+=== Modélisation des caractéristiques de l'agent
+
+==== Capteurs/Effecteurs
+
+Ici les capteurs ont été modélisés par de simples entiers permettant d'itérer à
+travers les salles de l'environnement afin d'en extraire les données ou permettant
+de récupérer la mesure de performance.
+
+Ses effecteurs ont été implémentés sous forme d'énumération (_Effectors.cs_).
+Ils sont au nombre de 6 : MoveUp, MoveDown, MoveLeft, MoveRight, Vacuum, PickUpJewel.
+Nous avons en effet considéré chacun des 4 mouvements comme induits par un effecteur différent.
+
+==== Belief/Desire/Intention
+
+Conformément au cours, nous avons implémenté pour notre agent un modèle
+beliefs/desire/intention. Nous nous sommes penchés sur l'implémentation la plus logique
+et les avons définit comme suit :
+
+[circle]
+* Les croyances (attribut privé_ _beliefs_ de la classe Agent) sont une classe à part
+entière (_Beliefs.cs_). Cette classe contient une réplique du manoir, implémentée de la même
+façon, c'est à dire un tableau de _Room_ nommé_ _believedRooms_ et modifié lorsque l'agent
+met à jour son état interne.
+* Les désirs (attribut privé_ _desire_ de la classe Agent) sont ici modélisés par un
+_Vertex_ (classe implémentée dans _Graph.cs_ représentant un noeud). En effet, 
+lorsque l'agent a repéré l'objet le plus proche, son désir est de
+se rendre dans la pièce correspondante pour intéragir avec.
+* Les intentions (attribut privé_ _intentions_ de la classe Agent) ont été implémentées sur la forme d'une pile d'_Effectors_. Le résultat 
+des algorithmes de plus court chemin ainsi que les croyances sur la pièce désirée 
+vont permettre de remplir cette pile d'intentions qu'il suffira ensuite de dépiler.
+
+==== Cycle de vie
+
+Le cycle de vie de notre agent est conforme au cycle de vie d'un agent basé sur les buts.
+Il s'éxecute sur un thread différent de l'environnement et de la vue graphique.
+Il consiste en 4 fonctions bien distinctes ayant chacune un but précis, qui se lancent 
+tant que l'agent est en vie (dans notre projet, l'agent n'est jamais censé mourir tant
+que le programme tourne).
+Les 4 fonctions sont les suivantes et sont retrouvables dans _AsyncWork()_, fonction de l'agent.
+
+[circle]
+* _ObserveEnvironment()_ : L'agent va utiliser ses capteurs pour mettre à jour ses
+croyances vis à vis des pièces occupées par une poussière et/ou un bijou en les listant.
+* _UpdateState()_ : L'agent va mettre à jour son état interne, à savoir d'une part 
+ses croyances sur le manoir entier grâce aux listes de pièces occupées par un objet qu'il
+vient de dresser, d'autre part il va questionner l'environnement sur sa mesure de performance
+et la comparer à celle de l'épisode précédent. Si elle est meilleure, il va continuer 
+d'affiner ses performance en réduisant le nombre maximum d'effecteurs auxquel il fait 
+appel lors d'un épisode, et vice-versa. Cela va lui permettre de faire plus souvent 
+appel à ses capteurs afin d'observer l'environnement si jamais l'environnement génère 
+beaucoup de poussières et que l'agent n'a que peu besoin de se déplacer à chaque fois
+qu'il souhaite aller à l'objet le plus proche. Ce nombre d'actions est minoré par 2 
+(un mouvement + ramasser ou aspirer) et majoré par 
+2 + la longueur du manoir
++ la largeur du manoir (soit le nombre maximum d'actions qu'il serait amené à faire
+si un bijou et une poussière étaient générés à l'exact coin opposé).
+* _PickAction()_ : L'agent va tout d'abord faire appel à ses croyances afin de déterminer
+l'objet le plus proche (_GetNearestBelievedItem()_). Une fois déterminé, il peut déjà 
+ajouter à sa pile d'intentions les intentions qu'il a vis-à-vis de cette pièce selon
+son contenu. Puis il va créer un graphe orienté (_BuildGraphAccordingToEnvironment()_ 
+décrit dans la partie suivante) et choisir aléatoirement (Il n'était pas précisé 
+dans le sujet la manière de choisir entre les deux) un algorithme d'exploration parmi les
+deux implémentés à savoir BFS (non-informé) et A* (informé). Grâce au chemin qui lui sera
+donnée par l'algorithme, l'agent pourra remplir la pile des mouvements correspondants aux
+déplacements adéquats.
+* _RealiseAction()_ : L'agent va dépiler la pile d'intentions pour actionner ses
+effecteurs correspondants. Selon l'action, il va mettre à jour sa position, mettre à jour
+ses croyances (l'environnement sera aussi informé afin de se mettre à jour et de
+rafraîchir la vue). Si le nombre d'intentions dépilé dépasse le nombre maximum actuel,
+alors on arrête cette fonction afin de terminer l'épisode et pouvoir ré-observer l'environnement.
+On n'oublie pas de vider ses intentions dans ce cas.
+
+=== Recherche du plus court chemin
+
+La recherche du plus court chemin se fait dans un graphe orienté modélise par la classe
+_Graph_ contenant une liste de _Vertex_. Il est généré lorsque l'agent doit chercher
+un plus court chemin. Les _Vertex_ sont des classes représentant sous forme de noeuds
+les pièces du manoir, et sont définis par leur Id unique ainsi que par les coordonnées
+de la pièce qu'ils représentent.
+
+Deux algorithmes de recherche ont été implémentés : A* (exploration informée) et
+BFS (exploration non-informée). L'agent choisit aléatoirement l'un des deux à chaque 
+fois qu'il souhaite se déplacer. Pour plus de lisibilité, les deux classes _AstarSearch_
+et _BreadthFirstSearch_ ont été implémentées selon l'interface _IShortestPathAlgorithm_ 
+définissant la signature des deux fonctions principales.
+
+[circle]
+* _bool ExploreAndSearch(int root, int desire)_ prend en paramètre l'Id du vertex
+correspondant à la position de l'agent, et celui du vertex de son desir et parcourt 
+le graphe. S'arrête et renvoie _true_ si on le trouve, _false_ sinon.
+* _Stack<int> BuildShortestPath(int root, int desire_) est appelé si l'on a trouvé 
+le _Vertex__ _desire_ et permet grâce aux informations récupérées à l'appel de la 
+fonction précédente de retracer le chemin le plus court permettant ensuite à l'agent
+de mettre à jour ses intentions.
+
+L'heuristique utilisé pour A* est la simple distance mathématique entre deux pièces,
+en considèrant les pièces comme des points situés sur leurs coordonnées : _HeuristicCostEstimation()_
+
+=== Comportement observé de l'agent
+
+Avec les paramètres de base concernant la fréquence globale du programme ainsi que les
+probabilités d'apparition des objets, l'agent commence par rester pendant quelques épisodes
+au nombre d'actions maximum. En effet s'il doit se déplacer trop loin pour aspirer 
+ou ramasser, il dépense plus d'électricité que sa mesure de performance ne remonte.
+Mais dès que l'environnement fait apparaître plus d'objets, il a moins à se déplacer 
+aussi sa mesure de performance monte et son nombre d'actions par tour baisse.
+Il peut ainsi observer plus souvent son environnement, ce qui est très bénéfique lorsqu'un
+objet apparaît près de lui alors qu'il est en déplacement. On constate après un certain
+temps (une, deux minutes) que le nombre d'actions moyen tend à se stabiliser entre 3 et 7.
+Quant à sa mesure de performance, elle fluctue au début mais tend vers + l'infini, même
+avec un bonus plutôt faible, cela étant sans doute dû aux probabilités d'apparition des objets.
+
+[[aff_anchor]]
+== L'affichage
+
+L'affichage est implémenté via la classe _GraphicalView_ héritant de la classe
+_System.Windows.Form_ et s'éxécute sur le thread principal. 
+A sa création, on crée une première fois les panels représentant les
+pièces, puis à chaque rafraîchissement on met à jour la propriété _BackgroundImage_ des panels
+afin d'afficher l'image correpondante.
+
+NOTE: Les images de la grille étant affichées en tant que background, nous ne 
+pouvions qu'afficher une image à la fois par case, c'est ainsi que si l'agent 
+passe sur une case déjà occupée par de la poussière ou un bijoux, ces images vont 
+disparaître (et réaparaître lorsque l'agent change de case) sans obligatoirement
+que l'agent les aient aspiré ou ramassé. +
+Pour être certain que lorsque l'agent passe sur une case contenant les deux 
+objets il ai bien ramassé les bijoux puis aspiré la poussière, il faut regarder
+les messages de la console.
